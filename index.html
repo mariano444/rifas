@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gran Rifa Interactiva Ultra</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/canvas-confetti@1.5.1/dist/confetti.browser.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #10b981;
+            --background-color: #f0f9ff;
+            --text-color: #1e3a8a;
+            --reserved-color: #ef4444;
+            --available-color: #34d399;
+            --highlight-color: #f59e0b;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .prize-info {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prize-info::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+            animation: shine 15s linear infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .prize-info h2 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .prize-info p {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+            transition: transform 0.3s ease;
+        }
+
+        .form-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 600;
+            margin-right: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        button:hover::after {
+            opacity: 1;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        .number-cell {
+            background-color: white;
+            border: 2px solid var(--available-color);
+            border-radius: 12px;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .number-cell:hover {
+            transform: scale(1.05) rotate(3deg);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .number-cell.reserved {
+            background-color: var(--reserved-color);
+            color: white;
+            border-color: var(--reserved-color);
+        }
+
+        .reserved-name {
+            font-size: 10px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding: 0 4px;
+            margin-top: 4px;
+        }
+
+        .live-counter {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .counter-number {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin-left: 10px;
+            min-width: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .counter-number::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .counter-number:hover::after {
+            opacity: 1;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        .tooltip {
+            position: absolute;
+            background-color: var(--text-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .number-cell:hover .tooltip {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .number-grid {
+                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="container">
+        <h1>Gran Rifa Interactiva Ultra</h1>
+        <div class="prize-info">
+            <h2>Premio Espectacular</h2>
+            <p>Un viaje todo incluido para dos personas a las Islas Maldivas</p>
+            <p>¡Incluye vuelos de primera clase, 7 noches en un resort de lujo y experiencias únicas!</p>
+        </div>
+        <div class="live-counter">
+            Números disponibles: <span class="counter-number" :class="{ pulse: counterPulse }">{{ availableNumbers.length }}</span>
+        </div>
+        <div class="form-container">
+            <h2>Reserva tu número</h2>
+            <form @submit.prevent="reserveNumber">
+                <div class="form-group">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" v-model="nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="apellido">Apellido:</label>
+                    <input type="text" id="apellido" v-model="apellido" required>
+                </div>
+                <div class="form-group">
+                    <label for="numero">Número (1-100):</label>
+                    <input type="number" id="numero" v-model="numero" min="1" max="100" required>
+                </div>
+                <button type="submit">Reservar y Pagar</button>
+                <button type="button" @click="luckyPick">Número de la Suerte</button>
+            </form>
+        </div>
+        <div class="number-grid">
+            <div 
+                v-for="n in 100" 
+                :key="n" 
+                :class="['number-cell', { reserved: isReserved(n) }]"
+                @click="selectNumber(n)"
+            >
+                {{ n }}
+                <div v-if="isReserved(n)" class="reserved-name">
+                    {{ getReservationName(n) }}
+                </div>
+                <div class="tooltip">
+                    {{ isReserved(n) ? 'Reservado por ' + getReservationName(n) : 'Disponible' }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, computed } = Vue
+
+        createApp({
+            setup() {
+                const reservations = ref([])
+                const nombre = ref('')
+                const apellido = ref('')
+                const numero = ref('')
+                const counterPulse = ref(false)
+
+                const availableNumbers = computed(() => {
+                    const reserved = new Set(reservations.value.map(r => r.numero))
+                    return Array.from({ length: 100 }, (_, i) => i + 1).filter(num => !reserved.has(num))
+                })
+
+                function reserveNumber() {
+                    const num = parseInt(numero.value)
+                    if (num < 1 || num > 100 || isReserved(num)) {
+                        alert('Por favor, elija un número válido entre 1 y 100 que no esté reservado.')
+                        return
+                    }
+                    reservations.value.push({ nombre: nombre.value, apellido: apellido.value, numero: num })
+                    nombre.value = ''
+                    apellido.value = ''
+                    numero.value = ''
+                    triggerConfetti()
+                    pulseCounter()
+                    alert('¡Número reservado con éxito!')
+                }
+
+                function isReserved(n) {
+                    return reservations.value.some(r => r.numero === n)
+                }
+
+                function getReservationName(n) {
+                    const reservation = reservations.value.find(r => r.numero === n)
+                    return reservation ? `${reservation.nombre} ${reservation.apellido}` : ''
+                }
+
+                function selectNumber(n) {
+                    if (!isReserved(n)) {
+                        numero.value = n
+                    }
+                }
+
+                function luckyPick() {
+                    if (availableNumbers.value.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * availableNumbers.value.length)
+                        numero.value = availableNumbers.value[randomIndex]
+                    } else {
+                        alert('No hay números disponibles.')
+                    }
+                }
+
+                function triggerConfetti() {
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    })
+                }
+
+                function pulseCounter() {
+                    counterPulse.value = true
+                    setTimeout(() => {
+                        counterPulse.value = false
+                    }, 500)
+                }
+
+                return {
+                    reservations,
+                    nombre,
+                    apellido,
+                    numero,
+                    availableNumbers,
+                    counterPulse,
+                    reserveNumber,
+                    isReserved,
+                    getReservationName,
+                    selectNumber,
+                    luckyPick
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>
