@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gran Rifa</title>
+    <title>Gran Rifa Interactiva Ultra Plus</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/canvas-confetti@1.5.1/dist/confetti.browser.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -16,6 +16,7 @@
             --reserved-color: #ef4444;
             --available-color: #34d399;
             --highlight-color: #f59e0b;
+            --selected-color: #8b5cf6;
         }
 
         body {
@@ -135,6 +136,7 @@
             font-size: 16px;
             font-weight: 600;
             margin-right: 10px;
+            margin-bottom: 10px;
             position: relative;
             overflow: hidden;
         }
@@ -197,6 +199,12 @@
             background-color: var(--reserved-color);
             color: white;
             border-color: var(--reserved-color);
+        }
+
+        .number-cell.selected {
+            background-color: var(--selected-color);
+            color: white;
+            border-color: var(--selected-color);
         }
 
         .reserved-name {
@@ -281,6 +289,30 @@
             opacity: 1;
         }
 
+        .selected-numbers {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-bottom: 20px;
+        }
+
+        .selected-numbers h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .selected-number-tag {
+            display: inline-block;
+            background-color: var(--selected-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
         @media (max-width: 768px) {
             .number-grid {
                 grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
@@ -290,18 +322,26 @@
 </head>
 <body>
     <div id="app" class="container">
-        <h1>Gran Rifa</h1>
+        <h1>Gran Rifa Interactiva Ultra Plus</h1>
         <div class="prize-info">
             <h2>Premio Espectacular</h2>
-            <p>Un viaje todo incluido para dos personas</p>
+            <p>Un viaje todo incluido para dos personas a las Islas Maldivas</p>
             <p>¡Incluye vuelos de primera clase, 7 noches en un resort de lujo y experiencias únicas!</p>
         </div>
         <div class="live-counter">
             Números disponibles: <span class="counter-number" :class="{ pulse: counterPulse }">{{ availableNumbers.length }}</span>
         </div>
+        <div class="selected-numbers" v-if="selectedNumbers.length > 0">
+            <h3>Números seleccionados:</h3>
+            <div>
+                <span v-for="num in selectedNumbers" :key="num" class="selected-number-tag">
+                    {{ num }}
+                </span>
+            </div>
+        </div>
         <div class="form-container">
-            <h2>Reserva tu número</h2>
-            <form @submit.prevent="reserveNumber">
+            <h2>Reserva tus números</h2>
+            <form @submit.prevent="reserveNumbers">
                 <div class="form-group">
                     <label for="nombre">Nombre:</label>
                     <input type="text" id="nombre" v-model="nombre" required>
@@ -310,27 +350,24 @@
                     <label for="apellido">Apellido:</label>
                     <input type="text" id="apellido" v-model="apellido" required>
                 </div>
-                <div class="form-group">
-                    <label for="numero">Número (1-100):</label>
-                    <input type="number" id="numero" v-model="numero" min="1" max="100" required>
-                </div>
-                <button type="submit">Reservar y Pagar</button>
+                <button type="submit" :disabled="selectedNumbers.length === 0">Reservar y Pagar</button>
                 <button type="button" @click="luckyPick">Número de la Suerte</button>
+                <button type="button" @click="clearSelection">Limpiar Selección</button>
             </form>
         </div>
         <div class="number-grid">
             <div 
                 v-for="n in 100" 
                 :key="n" 
-                :class="['number-cell', { reserved: isReserved(n) }]"
-                @click="selectNumber(n)"
+                :class="['number-cell', { reserved: isReserved(n), selected: isSelected(n) }]"
+                @click="toggleNumber(n)"
             >
                 {{ n }}
                 <div v-if="isReserved(n)" class="reserved-name">
                     {{ getReservationName(n) }}
                 </div>
                 <div class="tooltip">
-                    {{ isReserved(n) ? 'Reservado por ' + getReservationName(n) : 'Disponible' }}
+                    {{ isReserved(n) ? 'Reservado por ' + getReservationName(n) : (isSelected(n) ? 'Seleccionado' : 'Disponible') }}
                 </div>
             </div>
         </div>
@@ -344,7 +381,7 @@
                 const reservations = ref([])
                 const nombre = ref('')
                 const apellido = ref('')
-                const numero = ref('')
+                const selectedNumbers = ref([])
                 const counterPulse = ref(false)
 
                 const availableNumbers = computed(() => {
@@ -352,23 +389,30 @@
                     return Array.from({ length: 100 }, (_, i) => i + 1).filter(num => !reserved.has(num))
                 })
 
-                function reserveNumber() {
-                    const num = parseInt(numero.value)
-                    if (num < 1 || num > 100 || isReserved(num)) {
-                        alert('Por favor, elija un número válido entre 1 y 100 que no esté reservado.')
+                function reserveNumbers() {
+                    if (selectedNumbers.value.length === 0) {
+                        alert('Por favor, seleccione al menos un número.')
                         return
                     }
-                    reservations.value.push({ nombre: nombre.value, apellido: apellido.value, numero: num })
-                    nombre.value = ''
-                    apellido.value = ''
-                    numero.value = ''
+                    selectedNumbers.value.forEach(num => {
+                        if (!isReserved(num)) {
+                            reservations.value.push({ nombre: nombre.value, apellido: apellido.value, numero: num })
+                        }
+                    })
                     triggerConfetti()
                     pulseCounter()
-                    alert('¡Número reservado con éxito!')
+                    alert(`¡Números reservados con éxito: ${selectedNumbers.value.join(', ')}!`)
+                    nombre.value = ''
+                    apellido.value = ''
+                    selectedNumbers.value = []
                 }
 
                 function isReserved(n) {
                     return reservations.value.some(r => r.numero === n)
+                }
+
+                function isSelected(n) {
+                    return selectedNumbers.value.includes(n)
                 }
 
                 function getReservationName(n) {
@@ -376,19 +420,31 @@
                     return reservation ? `${reservation.nombre} ${reservation.apellido}` : ''
                 }
 
-                function selectNumber(n) {
+                function toggleNumber(n) {
                     if (!isReserved(n)) {
-                        numero.value = n
+                        const index = selectedNumbers.value.indexOf(n)
+                        if (index === -1) {
+                            selectedNumbers.value.push(n)
+                        } else {
+                            selectedNumbers.value.splice(index, 1)
+                        }
                     }
                 }
 
                 function luckyPick() {
                     if (availableNumbers.value.length > 0) {
                         const randomIndex = Math.floor(Math.random() * availableNumbers.value.length)
-                        numero.value = availableNumbers.value[randomIndex]
+                        const luckyNumber = availableNumbers.value[randomIndex]
+                        if (!selectedNumbers.value.includes(luckyNumber)) {
+                            selectedNumbers.value.push(luckyNumber)
+                        }
                     } else {
                         alert('No hay números disponibles.')
                     }
+                }
+
+                function clearSelection() {
+                    selectedNumbers.value = []
                 }
 
                 function triggerConfetti() {
@@ -410,14 +466,16 @@
                     reservations,
                     nombre,
                     apellido,
-                    numero,
+                    selectedNumbers,
                     availableNumbers,
                     counterPulse,
-                    reserveNumber,
+                    reserveNumbers,
                     isReserved,
+                    isSelected,
                     getReservationName,
-                    selectNumber,
-                    luckyPick
+                    toggleNumber,
+                    luckyPick,
+                    clearSelection
                 }
             }
         }).mount('#app')
