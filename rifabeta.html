@@ -803,8 +803,9 @@
 
                 const email = ref('')
 
+
                 const paymentMethod = ref('card')
-                const mp = new MercadoPago('TEST-a222a3c7-3f87-46c5-afe1-c172aa35323d');
+                const mp = new MercadoPago('APP_USR-a222a3c7-3f87-46c5-afe1-c172aa35323d');
 
                 function initPayment() {
                     if (selectedNumbers.value.length === 0) {
@@ -823,10 +824,11 @@
                         }
                     };
 
-                    fetch('/api/create-preference', {
+                    fetch('https://api.mercadopago.com/checkout/preferences', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'Authorization': 'Bearer APP_USR-8142007441986200-111615-e50b20f8c3dc747c1b6b6bfa7924cc3e-1670125470'
                         },
                         body: JSON.stringify(paymentData),
                     })
@@ -837,7 +839,6 @@
                             const settings = {
                                 initialization: {
                                     amount: totalPrice.value,
-                                    preferenceId: data.preferenceId
                                 },
                                 customization: {
                                     paymentMethods: {
@@ -855,7 +856,7 @@
                                     onSubmit: (cardFormData) => {
                                         // Callback called on form submission
                                         return new Promise((resolve, reject) => {
-                                            fetch("/api/process-payment", {
+                                            fetch("/process_payment", {
                                                 method: "POST",
                                                 headers: {
                                                     "Content-Type": "application/json",
