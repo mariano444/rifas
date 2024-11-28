@@ -1053,9 +1053,9 @@ async function initPayment() {
                     
                     doc.setFontSize(12);
                     doc.setFont('helvetica', 'normal');
-                    doc.text(`Nombre: ${nombre.value}`, 10, 35);
-                    doc.text(`Apellido: ${apellido.value}`, 10, 45);
-                    doc.text(`Teléfono: ${telefono.value}`, 10, 55);
+                    //doc.text(`Nombre: ${nombre.value}`, 10, 35);
+                    //doc.text(`Apellido: ${apellido.value}`, 10, 45);
+                    //doc.text(`Teléfono: ${telefono.value}`, 10, 55);
                     doc.text(`Números reservados: ${lastReservedNumbers.value.map(formatNumber).join(', ')}`, 10, 65);
                     doc.text(`Fecha: ${new Date().toLocaleString()}`, 10, 75);
                     
