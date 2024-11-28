@@ -58,6 +58,195 @@
             margin-bottom: 2rem;
         }
 
+
+        /* Updated styles for the countdown timer */
+        .countdown-container {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .countdown {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .countdown-item {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 10px;
+            min-width: 80px;
+            flex: 1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .countdown-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .countdown-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 5px;
+        }
+
+        @media (max-width: 480px) {
+            .countdown-item {
+                min-width: 60px;
+                padding: 8px;
+            }
+
+            .countdown-number {
+                font-size: 1.5rem;
+            }
+
+            .countdown-label {
+                font-size: 0.8rem;
+            }
+        }
+        /* Improved styles for draw date display */
+        .draw-info {
+            background-color: var(--highlight-color);
+            color: var(--background-color);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 30px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .draw-info:hover {
+            transform: scale(1.02);
+        }
+
+        /* Updated styles for the content reveal section */
+        .content-reveal-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .content-reveal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .smile-icon {
+            font-size: 1.4rem;
+            transition: transform 0.3s ease;
+        }
+
+        .content-reveal-btn:hover .smile-icon {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .hidden-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease;
+            opacity: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .hidden-content.revealed {
+            max-height: 2000px;
+            opacity: 1;
+            padding: 20px;
+        }
+
+        .hidden-content h3 {
+            color: var(--highlight-color);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .hidden-content ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .hidden-content li {
+            background-color: rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .hidden-content li:hover {
+            transform: translateX(5px);
+        }
+
+        .price-animation {
+            font-weight: bold;
+            color: var(--highlight-color);
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .revealed > * {
+            animation: fadeSlideIn 0.6s ease forwards;
+        }
+
+        @media (max-width: 768px) {
+
+            .content-reveal-btn {
+                font-size: 1rem;
+                padding: 12px 24px;
+            }
+
+            .hidden-content h3 {
+                font-size: 1.5rem;
+            }
+
+            .hidden-content li {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .price-animation {
+                margin-top: 10px;
+            }
+        }
+
         .prize-info {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
@@ -99,7 +288,6 @@
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-            /*margin-bottom: 40px;*/
             transition: transform 0.3s ease;
         }
 
@@ -490,30 +678,6 @@
             100% { transform: translateY(105vh) rotate(360deg); }
         }
 
-        @media (max-width: 768px) {
-            .number-grid {
-                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-            }
-
-            h1 {
-                font-size: 2.5rem;
-            }
-
-            .prize-info h2 {
-                font-size: 2rem;
-            }
-
-            .form-container {
-                padding: 20px;
-            }
-
-            button {
-                width: 100%;
-                margin-right: 0;
-                margin-bottom: 10px;
-            }
-        }
-
         .christmas-lights {
             position: fixed;
             top: 0;
@@ -611,6 +775,174 @@
             display: block;
         }
 
+        .prize-boxes {
+            position: relative;
+            width: 300px;
+            height: 400px;
+            margin: 40px auto;
+            perspective: 1000px;
+        }
+
+        .prize-box {
+            position: absolute;
+            width: 250px;
+            height: 350px;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .prize-box:nth-child(1) {
+            top: 0;
+            left: 0;
+            z-index: 3;
+            transform: rotate(-5deg);
+        }
+
+        .prize-box:nth-child(2) {
+            top: 20px;
+            left: 20px;
+            z-index: 2;
+            transform: rotate(5deg);
+        }
+
+        .prize-box:nth-child(3) {
+            top: 40px;
+            left: 40px;
+            z-index: 1;
+            transform: rotate(-3deg);
+        }
+
+        .prize-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+            transition: all 0.6s ease;
+            filter: brightness(1.1) contrast(1.1);
+        }
+
+        .prize-box:hover {
+            transform: translateY(-10px) rotate(0deg);
+            z-index: 4;
+        }
+
+        @media (max-width: 768px) {
+            .prize-boxes {
+                width: 250px;
+                height: 350px;
+            }
+
+            .prize-box {
+                width: 200px;
+                height: 280px;
+            }
+
+            .prize-box:nth-child(2) {
+                top: 15px;
+                left: 15px;
+            }
+
+            .prize-box:nth-child(3) {
+                top: 30px;
+                left: 30px;
+            }
+        }
+
+        .content-reveal-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .content-reveal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .smile-icon {
+            font-size: 1.4rem;
+            transition: transform 0.3s ease;
+        }
+
+        .content-reveal-btn:hover .smile-icon {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .hidden-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease;
+            opacity: 0;
+        }
+
+        .hidden-content.revealed {
+            max-height: 2000px;
+            opacity: 1;
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .revealed > * {
+            animation: fadeSlideIn 0.6s ease forwards;
+        }
+
+        @media (max-width: 768px) {
+            .prize-boxes {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .prize-box {
+                width: 100%;
+                max-width: 300px;
+                height: auto;
+                aspect-ratio: 3/4;
+            }
+
+            .number-grid {
+                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .prize-info h2 {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 20px;
+            }
+
+            button {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
         .price-promotion {
             background-color: rgba(255, 215, 0, 0.2);
             border: 2px solid var(--highlight-color);
@@ -707,6 +1039,7 @@
                 font-size: 0.9rem;
             }
         }
+
     </style>
 </head>
 <body>
@@ -735,9 +1068,82 @@
         <h1>Rifa Navideña</h1>
         <div class="prize-info">
             <h2>Premio Espectacular Navideño</h2>
-            <p>Caja navideña</p>
-            <p>Lotería nacional nocturna 23/12</p>
+            <div class="prize-boxes">
+                <div class="prize-box">
+                    <img src="WhatsApp Image 2024-11-28 at 12.41.11 PM.jpeg" alt="Caja Navideña 1" 
+                         onerror="this.onerror=null; this.src='https://via.placeholder.com/300x400?text=Caja+Navideña+1';">
+                </div>
+                <div class="prize-box">
+                    <img src="WhatsApp Image 2024-11-28 at 12.41.11 PM.jpeg" alt="Caja Navideña 2"
+                         onerror="this.onerror=null; this.src='https://via.placeholder.com/300x400?text=Caja+Navideña+2';">
+                </div>
+            </div>
+            <div id="contentRevealContainer" class="text-center">
+                <button id="contentRevealBtn" class="content-reveal-btn">
+                    Ver Premios <span class="smile-icon">😊</span>
+                </button>
+            </div>
+            <div id="hiddenContent" class="hidden-content">
+                <h3>Contenido de las Cajas Navideñas:</h3>
+                <ul>
+                    <li>
+                        Primer Premio: Caja Navideña Premium
+                        <ul>
+                            <li>Pan Dulce</li>
+                            <li>Sidra</li>
+                            <li>Turrón</li>
+                            <li>Nueces Seleccionadas</li>
+                            <li>Vino Espumante</li>
+                        </ul>
+                    </li>
+                    <li>
+                        Segundo Premio: Caja Navideña Deluxe
+                        <ul>
+                            <li>Pan Dulce Artesanal</li>
+                            <li>Sidra Clásica</li>
+                            <li>Turrón de Chocolate</li>
+                            <li>Surtido de Frutos Secos</li>
+                        </ul>
+                    </li>
+                    <li>
+                        Tercer Premio: Combo Festivo
+                        <ul>
+                            <li>Pan Dulce Tradicional</li>
+                            <li>Sidra</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
+
+        <!-- Updated countdown timer with seconds -->
+        <div class="countdown-container">
+            <h2 class="countdown-title">Tiempo restante para el sorteo</h2>
+            <div class="countdown">
+                <div class="countdown-item">
+                    <div class="countdown-number" id="countdown-days">00</div>
+                    <div class="countdown-label">Días</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="countdown-hours">00</div>
+                    <div class="countdown-label">Horas</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="countdown-minutes">00</div>
+                    <div class="countdown-label">Minutos</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="countdown-seconds">00</div>
+                    <div class="countdown-label">Segundos</div>
+                </div>
+            </div>
+            <p>Número equivalente a las últimas dos cifras de las primeras tres posiciones del sorteo de la Lotería Nacional Nocturna del día 20/12.</p>
+        </div>
+
+        <!-- Improved draw date display 
+        <div class="draw-info">
+            <p>Número equivalente a las últimas dos cifras de las primeras tres posiciones del sorteo de la Lotería Nacional Nocturna del día 20/12.</p>
+        </div>-->
         <div class="live-counter">
             Números disponibles: <span class="counter-number" :class="{ pulse: counterPulse }">{{ availableNumbers.length }}</span>
         </div>
@@ -746,13 +1152,13 @@
         </div>
         <div class="form-container">
             <h2>Reserva tus números navideños</h2>
-            <!--div class="price-info">
+            <div class="price-info">
                 <p>Precios:</p>
                 <ul>
                     <li>1 número: $1500</li>
                     <li>2 números o más: $1000 cada uno</li>
                 </ul>
-        </div-->
+            </div>
             <form @submit.prevent="initPayment">
                 <div class="form-group">
                     <label for="nombre">Nombre:</label>
@@ -875,6 +1281,107 @@
                 
                 const showAdditionalPrompt = ref(false)
                 const numberGrid = ref(null)
+
+                function updateCountdown() {
+                    const drawDate = new Date('2024-12-20T00:00:00').getTime();
+                    const now = new Date().getTime();
+                    const timeLeft = drawDate - now;
+
+                    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                    const daysElement = document.getElementById('countdown-days');
+                    const hoursElement = document.getElementById('countdown-hours');
+                    const minutesElement = document.getElementById('countdown-minutes');
+                    const secondsElement = document.getElementById('countdown-seconds');
+
+                    if (daysElement) daysElement.textContent = days.toString().padStart(2, '0');
+                    if (hoursElement) hoursElement.textContent = hours.toString().padStart(2, '0');
+                    if (minutesElement) minutesElement.textContent = minutes.toString().padStart(2, '0');
+                    if (secondsElement) secondsElement.textContent = seconds.toString().padStart(2, '0');
+
+                    if (timeLeft < 0) {
+                        clearInterval(countdownTimer);
+                        const countdownContainer = document.querySelector('.countdown-container');
+                        if (countdownContainer) {
+                            countdownContainer.innerHTML = '<h2 class="countdown-title">¡El sorteo ha finalizado!</h2>';
+                        }
+                    }
+                }
+
+
+                function initializeContentReveal() {
+            const contentRevealBtn = document.getElementById('contentRevealBtn');
+            const hiddenContent = document.getElementById('hiddenContent');
+            
+            if (contentRevealBtn && hiddenContent) {
+                contentRevealBtn.addEventListener('click', function() {
+                    const smile = this.querySelector('.smile-icon');
+                    const isRevealed = hiddenContent.classList.contains('revealed');
+                    
+                    if (isRevealed) {
+                        hiddenContent.classList.remove('revealed');
+                        smile.textContent = '😊';
+                        this.textContent = 'Ver Premios ';
+                        this.appendChild(smile);
+                    } else {
+                        hiddenContent.classList.add('revealed');
+                        smile.textContent = '😄';
+                        this.textContent = 'Ocultar Premios ';
+                        this.appendChild(smile);
+                        
+                        // Animación de los elementos del contenido
+                        const items = hiddenContent.querySelectorAll('li');
+                        items.forEach((item, index) => {
+                            item.style.animation = `fadeSlideIn 0.5s ease forwards ${index * 0.1}s`;
+                        });
+                    }
+                });
+            }
+        }
+
+                let countdownTimer;
+
+
+                function createConfetti(element) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    
+                    // Random position around the price
+                    const rect = element.getBoundingClientRect();
+                    confetti.style.left = `${rect.left + Math.random() * rect.width}px`;
+                    confetti.style.top = `${rect.top + Math.random() * rect.height}px`;
+                    
+                    // Random color
+                    confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    
+                    document.body.appendChild(confetti);
+                    
+                    // Animate
+                    confetti.animate([
+                        { transform: 'translate(0, 0) rotate(0deg)', opacity: 1 },
+                        { transform: `translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 + 50}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                    ], {
+                        duration: 1000,
+                        easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                    }).onfinish = () => confetti.remove();
+                }
+
+                // Animate prices on scroll
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.animation = 'priceReveal 0.5s ease forwards';
+                            // Create confetti
+                            for (let i = 0; i < 20; i++) {
+                                setTimeout(() => createConfetti(entry.target), i * 50);
+                            }
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.5 });
 
                 function scrollToNumbers() {
                     if (numberGrid.value) {
@@ -1271,9 +1778,25 @@
                         }
                     }
                     createSnowflakes()
+                    initializeContentReveal()
 
                     await fetchReservations()
+                    
+                    updateCountdown(); // Initial call to avoid delay
+                    countdownTimer = setInterval(updateCountdown, 1000);
 
+                    updateCountdown(); // Initial call to avoid delay
+                    countdownTimer = setInterval(updateCountdown, 1000);
+
+                    // Animate countdown on mount
+                    gsap.from(".countdown-container", { opacity: 0, y: 50, duration: 1, delay: 0.5 });
+                    gsap.from(".countdown-item", { 
+                        opacity: 0, 
+                        scale: 0.5, 
+                        duration: 0.5, 
+                        stagger: 0.2,
+                        delay: 1
+                    });
                     const urlParams = new URLSearchParams(window.location.search);
                     const status = urlParams.get('status');
                     if (status === 'approved') {
@@ -1281,7 +1804,19 @@
                     } else if (status === 'failure' || status === 'pending') {
                         alert('El pago no se ha completado. Por favor, intente nuevamente.');
                     }
+
+                    document.querySelectorAll('.price-animation').forEach(price => {
+                        observer.observe(price);
+                    });
                 })
+
+                onUnmounted(() => {
+                    // Clear the interval when the component is unmounted
+                    if (countdownTimer) {
+                        clearInterval(countdownTimer);
+                    }
+                });
+
 
                 return {
                     initPayment,
