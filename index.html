@@ -99,7 +99,7 @@
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-            margin-bottom: 40px;
+            /*margin-bottom: 40px;*/
             transition: transform 0.3s ease;
         }
 
@@ -744,24 +744,6 @@
         <div class="progress-bar">
             <div class="progress-bar-fill" :style="{ width: progressPercentage + '%' }"></div>
         </div>
-        <div class="selected-numbers" v-if="selectedNumbers.length > 0">
-            <h3>Números seleccionados:</h3>
-            <div>
-                <span v-for="num in selectedNumbers" :key="num" class="selected-number-tag">
-                    {{ formatNumber(num) }}
-                </span>
-            </div>
-            <p>Precio total: ${{ totalPrice }}</p>
-        </div>
-        <div class="price-promotion" v-if="showPricePromotion">
-            <span v-if="selectedNumbers.length === 1">
-                ¡Gran oferta! Elige un número más y paga solo $2000 por los dos.
-            </span>
-            <span v-else>
-                ¡Oferta especial! Elige dos o más números y paga solo $1000 cada uno.
-            </span>
-            <strong>{{ pricePromotionText }}</strong>
-        </div>
         <div class="form-container">
             <h2>Reserva tus números navideños</h2>
             <div class="price-info">
@@ -784,6 +766,7 @@
                     <label for="telefono">Número de Celular:</label>
                     <input type="tel" id="telefono" v-model="telefono" required>
                 </div>
+                <p>Precio total: ${{ totalPrice }}</p>
                 <button type="submit" :disabled="selectedNumbers.length === 0">{{ buttonText }}</button>
                 <button type="button" @click="luckyPick">Número de la Suerte Navideña</button>
                 <button type="button" @click="clearSelection">Limpiar Selección</button>
@@ -792,6 +775,23 @@
                 <p>¿Te gustaría elegir otro número para aumentar tus chances de ganar por solo $1000 más?</p>
                 <button @click="scrollToNumbers">¡Sí, quiero otro número!</button>
             </div>
+        </div>
+        <div class="selected-numbers" v-if="selectedNumbers.length > 0">
+            <h3>Números seleccionados:</h3>
+            <div>
+                <span v-for="num in selectedNumbers" :key="num" class="selected-number-tag">
+                    {{ formatNumber(num) }}
+                </span>
+            </div>
+        </div>
+        <div class="price-promotion" v-if="showPricePromotion">
+            <span v-if="selectedNumbers.length === 1">
+                ¡Gran oferta! Elige un número más y paga solo $2000 por los dos.
+            </span>
+            <span v-else>
+                ¡Oferta especial! Elige dos o más números y paga solo $1000 cada uno.
+            </span>
+            <strong>{{ pricePromotionText }}</strong>
         </div>
         <div class="number-grid">
             <div 
@@ -815,7 +815,10 @@
             <div class="modal-content">
                 <span class="close-modal">&times;</span>
                 <h2>¡Gran Oferta!</h2>
-                <p>Buena elección. Has seleccionado el número <span id="selectedNumber"></span>.</p>
+                <p>Buena elección el número <span id="selectedNumber"></span>.</p>
+                 Elige un número más y paga solo $2000 por los dos.
+                 <br>
+                 <strong>1 por $1500 - 2 por $2000</strong>
                 <button id="chooseAnotherBtn" class="choose-another-btn">Elegir otro número</button>
             </div>
         </div>
