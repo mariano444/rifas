@@ -772,6 +772,43 @@
                 const luckyNumber = ref(null)
                 const modal = ref(null)
 
+                function downloadParticipation() {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF({
+                        orientation: 'landscape',
+                        unit: 'mm',
+                        format: [100, 150]
+                    });
+                    
+                    doc.setFillColor(240, 249, 255);
+                    doc.rect(0, 0, 150, 100, 'F');
+                    
+                    doc.setDrawColor(196, 30, 58);
+                    doc.setLineWidth(2);
+                    doc.line(5, 5, 145, 5);
+                    doc.line(5, 95, 145, 95);
+                    
+                    doc.setTextColor(30, 41, 59);
+                    doc.setFont('helvetica', 'bold');
+                    
+                    doc.setFontSize(16);
+                    doc.text('Comprobante de Participación Navideña', 75, 20, null, null, 'center');
+                    
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`Nombre: ${nombre.value}`, 10, 35);
+                    doc.text(`Apellido: ${apellido.value}`, 10, 45);
+                    doc.text(`Teléfono: ${telefono.value}`, 10, 55);
+                    doc.text(`Números reservados: ${lastReservedNumbers.value.map(formatNumber).join(', ')}`, 10, 65);
+                    doc.text(`Fecha: ${new Date().toLocaleString()}`, 10, 75);
+                    
+                    doc.setFontSize(10);
+                    doc.setTextColor(196, 30, 58);
+                    doc.text('¡Gracias por participar en nuestra Gran Rifa Navideña!', 75, 90, null, null, 'center');
+                    
+                    doc.save(`comprobante_navideño_${nombre.value}_${apellido.value}.pdf`);
+                }
+
                 const mp = new MercadoPago('APP_USR-a222a3c7-3f87-46c5-afe1-c172aa35323d');
 
                 function formatNumber(num) {
@@ -1084,43 +1121,6 @@
                         alert('El pago no se ha completado. Por favor, intente nuevamente.');
                     }
                 })
-
-                function downloadParticipation() {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF({
-                        orientation: 'landscape',
-                        unit: 'mm',
-                        format: [100, 150]
-                    });
-                    
-                    doc.setFillColor(240, 249, 255);
-                    doc.rect(0, 0, 150, 100, 'F');
-                    
-                    doc.setDrawColor(196, 30, 58);
-                    doc.setLineWidth(2);
-                    doc.line(5, 5, 145, 5);
-                    doc.line(5, 95, 145, 95);
-                    
-                    doc.setTextColor(30, 41, 59);
-                    doc.setFont('helvetica', 'bold');
-                    
-                    doc.setFontSize(16);
-                    doc.text('Comprobante de Participación Navideña', 75, 20, null, null, 'center');
-                    
-                    doc.setFontSize(12);
-                    doc.setFont('helvetica', 'normal');
-                    doc.text(`Nombre: ${nombre.value}`, 10, 35);
-                    doc.text(`Apellido: ${apellido.value}`, 10, 45);
-                    doc.text(`Teléfono: ${telefono.value}`, 10, 55);
-                    doc.text(`Números reservados: ${lastReservedNumbers.value.map(formatNumber).join(', ')}`, 10, 65);
-                    doc.text(`Fecha: ${new Date().toLocaleString()}`, 10, 75);
-                    
-                    doc.setFontSize(10);
-                    doc.setTextColor(196, 30, 58);
-                    doc.text('¡Gracias por participar en nuestra Gran Rifa Navideña!', 75, 90, null, null, 'center');
-                    
-                    doc.save(`comprobante_navideño_${nombre.value}_${apellido.value}.pdf`);
-                }
 
 
                 return {
