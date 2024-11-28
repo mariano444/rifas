@@ -761,7 +761,6 @@
 
                 const telefono = ref('') // New ref for phone number
 
-
                 async function initPayment() {
                     if (selectedNumbers.value.length === 0) {
                         alert('Por favor, seleccione al menos un número.')
@@ -781,7 +780,7 @@
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'Authorization': 'Bearer APP_USR-3549263053798148-110618-852bdcdbea13c4a27d5d95d8e7f98f5b-2079511789'
+                                'Authorization': 'Bearer APP_USR-8142007441986200-111615-e50b20f8c3dc747c1b6b6bfa7924cc3e-1670125470'
                             },
                             body: JSON.stringify({
                                 items: [{
@@ -840,18 +839,21 @@
                             const newReservation = { 
                                 nombre: nombre.value, 
                                 apellido: apellido.value, 
-                                telefono: telefono.value,
                                 numero: num 
+                                // Remove telefono from here as it's not in the schema
                             }
                             reservations.value.push(newReservation)
                             
-                            // Store the reservation in Supabase
-                            const { data, error } = await supabase
-                                .from('reservations')
-                                .insert([newReservation])
+                            try {
+                                // Store the reservation in Supabase
+                                const { data, error } = await supabase
+                                    .from('reservations')
+                                    .insert([newReservation])
 
-                            if (error) {
+                                if (error) throw error;
+                            } catch (error) {
                                 console.error('Error storing reservation:', error)
+                                alert('Hubo un error al guardar la reserva. Por favor, contacte al administrador.')
                             }
                         }
                     }
@@ -864,7 +866,21 @@
                     telefono.value = ''
                     selectedNumbers.value = []
                 }
-//////
+
+                async function fetchReservations() {
+                    try {
+                        const { data, error } = await supabase
+                            .from('reservations')
+                            .select('nombre, apellido, numero')
+
+                        if (error) throw error;
+                        reservations.value = data
+                    } catch (error) {
+                        console.error('Error fetching reservations:', error)
+                        alert('Hubo un error al cargar las reservaciones. Por favor, recargue la página.')
+                    }
+                }
+
 
                 const mp = new MercadoPago('APP_USR-7e074160-3840-4194-bf27-7beee9489c9d');
 
