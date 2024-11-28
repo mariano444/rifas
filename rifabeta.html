@@ -625,6 +625,22 @@
             color: white;
             border-color: var(--selected-color);
         }
+        input[type="tel"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            color: var(--text-color);
+        }
+
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: var(--highlight-color);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -651,14 +667,10 @@
     </div>
     <div id="app" class="container">
         <h1>Rifa Navideña</h1>
-        <!--div class="countdown">
-            Lotería naciona nocturna 23/12
-    </div-->
         <div class="prize-info">
             <h2>Premio Espectacular Navideño</h2>
             <p>Caja navideña</p>
             <p>Lotería nacional nocturna 23/12</p>
-            <!--img src="/placeholder.svg?height=400&width=600" alt="Budines" class="prize-image"-->
         </div>
         <div class="live-counter">
             Números disponibles: <span class="counter-number" :class="{ pulse: counterPulse }">{{ availableNumbers.length }}</span>
@@ -670,7 +682,7 @@
             <h3>Números seleccionados:</h3>
             <div>
                 <span v-for="num in selectedNumbers" :key="num" class="selected-number-tag">
-                    {{ num }}
+                    {{ formatNumber(num) }}
                 </span>
             </div>
             <p>Precio total: ${{ totalPrice }}</p>
@@ -702,7 +714,7 @@
                 :class="['number-cell', { reserved: isReserved(n), selected: isSelected(n) }]"
                 @click="toggleNumber(n)"
             >
-                {{ n }}
+                {{ formatNumber(n) }}
                 <div v-if="isReserved(n)" class="reserved-name">
                     {{ getReservationName(n) }}
                 </div>
@@ -720,7 +732,7 @@
                 <p>Has reservado los siguientes números:</p>
                 <div class="selected-numbers">
                     <span v-for="num in lastReservedNumbers" :key="num" class="selected-number-tag">
-                        {{ num }}
+                        {{ formatNumber(num) }}
                     </span>
                 </div>
                 <p>Descarga tu comprobante de participación:</p>
@@ -729,7 +741,7 @@
         </div>
         <div class="fireworks" ref="fireworks"></div>
         <div v-if="showLuckyPickAnimation" class="lucky-pick-animation">
-            <div class="lucky-number">{{ luckyNumber }}</div>
+            <div class="lucky-number">{{ formatNumber(luckyNumber) }}</div>
         </div>
     </div>
 
@@ -751,15 +763,20 @@
                 const reservations = ref([])
                 const nombre = ref('')
                 const apellido = ref('')
+                const telefono = ref('')
                 const selectedNumbers = ref([])
+                const lastReservedNumbers = ref([])
                 const counterPulse = ref(false)
                 const fireworks = ref(null)
                 const showLuckyPickAnimation = ref(false)
                 const luckyNumber = ref(null)
-                const lastReservedNumbers = ref([])
                 const modal = ref(null)
 
-                const telefono = ref('') // New ref for phone number
+                const mp = new MercadoPago('APP_USR-a222a3c7-3f87-46c5-afe1-c172aa35323d');
+
+                function formatNumber(num) {
+                    return num.toString().padStart(2, '0');
+                }
 
                 async function initPayment() {
                     if (selectedNumbers.value.length === 0) {
@@ -767,7 +784,6 @@
                         return
                     }
 
-                    // Store data in localStorage before redirecting to payment
                     localStorage.setItem('pendingReservation', JSON.stringify({
                         nombre: nombre.value,
                         apellido: apellido.value,
@@ -780,7 +796,7 @@
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'Authorization': 'Bearer APP_USR-8142007441986200-111615-e50b20f8c3dc747c1b6b6bfa7924cc3e-1670125470'
+                                'Authorization': 'Bearer APP_USR-3549263053798148-110618-852bdcdbea13c4a27d5d95d8e7f98f5b-2079511789'
                             },
                             body: JSON.stringify({
                                 items: [{
@@ -803,8 +819,6 @@
                         });
 
                         const preference = await response.json();
-
-                        // Redirect to MercadoPago checkout
                         window.location.href = preference.init_point;
                     } catch (error) {
                         console.error('Error al iniciar el pago:', error);
@@ -840,12 +854,10 @@
                                 nombre: nombre.value, 
                                 apellido: apellido.value, 
                                 numero: num 
-                                // Remove telefono from here as it's not in the schema
                             }
                             reservations.value.push(newReservation)
                             
                             try {
-                                // Store the reservation in Supabase
                                 const { data, error } = await supabase
                                     .from('reservations')
                                     .insert([newReservation])
@@ -878,40 +890,6 @@
                     } catch (error) {
                         console.error('Error fetching reservations:', error)
                         alert('Hubo un error al cargar las reservaciones. Por favor, recargue la página.')
-                    }
-                }
-
-
-                const mp = new MercadoPago('APP_USR-7e074160-3840-4194-bf27-7beee9489c9d');
-
-
-                function createSnowflakes() {
-                    const snowfall = document.getElementById('snowfall');
-                    const numberOfSnowflakes = 50;
-
-                    for (let i = 0; i < numberOfSnowflakes; i++) {
-                        const snowflake = document.createElement('div');
-                        snowflake.className = 'snowflake';
-                        snowflake.style.left = `${Math.random() * 100}%`;
-                        snowflake.style.opacity = Math.random();
-                        snowflake.style.width = `${Math.random() * 5 + 2}px`;
-                        snowflake.style.height = snowflake.style.width;
-                        snowflake.style.animationDuration = `${Math.random() * 3 + 2}s`;
-                        snowflake.style.animationDelay = `${Math.random() * 2}s`;
-                        snowfall.appendChild(snowflake);
-                    }
-                }
-
-
-                async function fetchReservations() {
-                    const { data, error } = await supabase
-                        .from('reservations')
-                        .select('*')
-
-                    if (error) {
-                        console.error('Error fetching reservations:', error)
-                    } else {
-                        reservations.value = data
                     }
                 }
 
@@ -1062,46 +1040,23 @@
                     })
                 }
 
-                function downloadParticipation() {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF({
-                        orientation: 'landscape',
-                        unit: 'mm',
-                        format: [100, 150]
-                    });
-                    
-                    // Set background color
-                    doc.setFillColor(240, 249, 255);
-                    doc.rect(0, 0, 150, 100, 'F');
-                    
-                    // Add decorative elements
-                    doc.setDrawColor(196, 30, 58);
-                    doc.setLineWidth(2);
-                    doc.line(5, 5, 145, 5);
-                    doc.line(5, 95, 145, 95);
-                    
-                    // Set text color and font
-                    doc.setTextColor(30, 41, 59);
-                    doc.setFont('helvetica', 'bold');
-                    
-                    // Add title
-                    doc.setFontSize(16);
-                    doc.text('Comprobante de Participación Navideña', 75, 20, null, null, 'center');
-                    
-                    // Add content
-                    doc.setFontSize(12);
-                    doc.setFont('helvetica', 'normal');
-                    doc.text(`Nombre: ${nombre.value} ${apellido.value}`, 10, 35);
-                    doc.text(`Números reservados: ${lastReservedNumbers.value.join(', ')}`, 10, 45);
-                    doc.text(`Fecha: ${new Date().toLocaleString()}`, 10, 55);
-                    
-                    // Add footer
-                    doc.setFontSize(10);
-                    doc.setTextColor(196, 30, 58);
-                    doc.text('¡Gracias por participar en nuestra Gran Rifa Navideña!', 75, 85, null, null, 'center');
-                    
-                    doc.save(`comprobante_navideño_${nombre.value}_${apellido.value}.pdf`);
+                function createSnowflakes() {
+                    const snowfall = document.getElementById('snowfall');
+                    const numberOfSnowflakes = 50;
+
+                    for (let i = 0; i < numberOfSnowflakes; i++) {
+                        const snowflake = document.createElement('div');
+                        snowflake.className = 'snowflake';
+                        snowflake.style.left = `${Math.random() * 100}%`;
+                        snowflake.style.opacity = Math.random();
+                        snowflake.style.width = `${Math.random() * 5 + 2}px`;
+                        snowflake.style.height = snowflake.style.width;
+                        snowflake.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                        snowflake.style.animationDelay = `${Math.random() * 2}s`;
+                        snowfall.appendChild(snowflake);
+                    }
                 }
+
 
                 onMounted(async () => {
                     gsap.from("#app h1", { opacity: 0, y: -50, duration: 1 })
@@ -1119,22 +1074,54 @@
                     }
                     createSnowflakes()
 
-                    // Fetch reservations from Supabase
                     await fetchReservations()
 
-                                        // Check for payment status and process result
-                      await processPaymentResult();
-
-
-                    // Check for payment status in URL
                     const urlParams = new URLSearchParams(window.location.search);
                     const status = urlParams.get('status');
-                    if (status === 'success') {
-                        await reserveNumbers();
+                    if (status === 'approved') {
+                        await processPaymentResult();
                     } else if (status === 'failure' || status === 'pending') {
                         alert('El pago no se ha completado. Por favor, intente nuevamente.');
                     }
                 })
+
+                function downloadParticipation() {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF({
+                        orientation: 'landscape',
+                        unit: 'mm',
+                        format: [100, 150]
+                    });
+                    
+                    doc.setFillColor(240, 249, 255);
+                    doc.rect(0, 0, 150, 100, 'F');
+                    
+                    doc.setDrawColor(196, 30, 58);
+                    doc.setLineWidth(2);
+                    doc.line(5, 5, 145, 5);
+                    doc.line(5, 95, 145, 95);
+                    
+                    doc.setTextColor(30, 41, 59);
+                    doc.setFont('helvetica', 'bold');
+                    
+                    doc.setFontSize(16);
+                    doc.text('Comprobante de Participación Navideña', 75, 20, null, null, 'center');
+                    
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`Nombre: ${nombre.value}`, 10, 35);
+                    doc.text(`Apellido: ${apellido.value}`, 10, 45);
+                    doc.text(`Teléfono: ${telefono.value}`, 10, 55);
+                    doc.text(`Números reservados: ${lastReservedNumbers.value.map(formatNumber).join(', ')}`, 10, 65);
+                    doc.text(`Fecha: ${new Date().toLocaleString()}`, 10, 75);
+                    
+                    doc.setFontSize(10);
+                    doc.setTextColor(196, 30, 58);
+                    doc.text('¡Gracias por participar en nuestra Gran Rifa Navideña!', 75, 90, null, null, 'center');
+                    
+                    doc.save(`comprobante_navideño_${nombre.value}_${apellido.value}.pdf`);
+                }
+
 
                 return {
                     initPayment,
@@ -1158,7 +1145,8 @@
                     getReservationName,
                     luckyPick,
                     clearSelection,
-                    downloadParticipation
+                    downloadParticipation,
+                    formatNumber
                 }
             }
         }).mount('#app')
