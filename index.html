@@ -1408,13 +1408,13 @@
                     try {
                         const { data: permanentReservations, error: permanentError } = await supabase
                             .from('reservations')
-                            .select('nombre, apellido,telefono, numero')
+                            .select('nombre, apellido, numero')
 
                         if (permanentError) throw permanentError;
 
                         const { data: tempReservations, error: tempError } = await supabase
                             .from('temp_reservations')
-                            .select('nombre, apellido, telefono, selectedNumbers')
+                            .select('nombre, apellido, selectedNumbers')
                             .gte('expiresAt', new Date().toISOString())
 
                         if (tempError) throw tempError;
@@ -1425,7 +1425,6 @@
                                 tr.selectedNumbers.map(num => ({
                                     nombre: tr.nombre,
                                     apellido: tr.apellido,
-                                    telefono: tr.telefono,
                                     numero: num
                                 }))
                             )
