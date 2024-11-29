@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gran Rifa Navideña</title>
+    <title>Sorteo Navideño</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://unpkg.com/canvas-confetti@1.5.1/dist/confetti.browser.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
@@ -47,7 +47,6 @@
             backdrop-filter: blur(10px);
         }
 
-        
         h1, h2 {
             text-align: center;
             color: var(--highlight-color);
@@ -57,15 +56,194 @@
         h1 {
             font-size: 3.5rem;
             margin-bottom: 2rem;
-            /*animation: glow 2s ease-in-out infinite alternate;*/
         }
 
-        @keyframes glow {
+
+        /* Updated styles for the countdown timer */
+        .countdown-container {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .countdown {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .countdown-item {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 10px;
+            min-width: 80px;
+            flex: 1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .countdown-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .countdown-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 5px;
+        }
+
+        @media (max-width: 480px) {
+            .countdown-item {
+                min-width: 60px;
+                padding: 8px;
+            }
+
+            .countdown-number {
+                font-size: 1.5rem;
+            }
+
+            .countdown-label {
+                font-size: 0.8rem;
+            }
+        }
+        /* Improved styles for draw date display */
+        .draw-info {
+            background-color: var(--highlight-color);
+            color: var(--background-color);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 30px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .draw-info:hover {
+            transform: scale(1.02);
+        }
+
+        /* Updated styles for the content reveal section */
+        .content-reveal-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .content-reveal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .smile-icon {
+            font-size: 1.4rem;
+            transition: transform 0.3s ease;
+        }
+
+        .content-reveal-btn:hover .smile-icon {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .hidden-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease;
+            opacity: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .hidden-content.revealed {
+            max-height: 2000px;
+            opacity: 1;
+            padding: 20px;
+        }
+
+        .hidden-content h3 {
+            color: var(--highlight-color);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .hidden-content ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .hidden-content li {
+            background-color: rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .hidden-content li:hover {
+            transform: translateX(5px);
+        }
+
+        .price-animation {
+            font-weight: bold;
+            color: var(--highlight-color);
+        }
+
+        @keyframes fadeSlideIn {
             from {
-                text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px var(--highlight-color), 0 0 35px var(--highlight-color), 0 0 40px var(--highlight-color), 0 0 50px var(--highlight-color), 0 0 75px var(--highlight-color);
+                opacity: 0;
+                transform: translateY(20px);
             }
             to {
-                text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px var(--highlight-color), 0 0 70px var(--highlight-color), 0 0 80px var(--highlight-color), 0 0 100px var(--highlight-color), 0 0 150px var(--highlight-color);
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .revealed > * {
+            animation: fadeSlideIn 0.6s ease forwards;
+        }
+
+        @media (max-width: 768px) {
+
+            .content-reveal-btn {
+                font-size: 1rem;
+                padding: 12px 24px;
+            }
+
+            .hidden-content h3 {
+                font-size: 1.5rem;
+            }
+
+            .hidden-content li {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .price-animation {
+                margin-top: 10px;
             }
         }
 
@@ -79,11 +257,6 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
             position: relative;
             overflow: hidden;
-        }
-
-        @keyframes shine {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
 
         .prize-info h2 {
@@ -115,7 +288,6 @@
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-            margin-bottom: 40px;
             transition: transform 0.3s ease;
         }
 
@@ -134,7 +306,7 @@
             color: var(--text-color);
         }
 
-        input[type="text"] {
+        input[type="text"], input[type="tel"] {
             width: 100%;
             padding: 12px;
             border: 2px solid rgba(255, 255, 255, 0.2);
@@ -145,7 +317,7 @@
             color: var(--text-color);
         }
 
-        input[type="text"]:focus {
+        input[type="text"]:focus, input[type="tel"]:focus {
             outline: none;
             border-color: var(--highlight-color);
             box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
@@ -285,14 +457,14 @@
             opacity: 1;
         }
 
+        .pulse {
+            animation: pulse 0.5s ease-in-out;
+        }
+
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
-        }
-
-        .pulse {
-            animation: pulse 0.5s ease-in-out;
         }
 
         .tooltip {
@@ -386,7 +558,7 @@
         .modal {
             display: none;
             position: fixed;
-            z-index: 1;
+            z-index: 1000;
             left: 0;
             top: 0;
             width: 100%;
@@ -401,24 +573,28 @@
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
-            max-width: 600px;
+            max-width: 400px;
             text-align: center;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: top 0.3s ease-out;
         }
 
-        .close {
+        .close-modal {
             color: #aaa;
             float: right;
             font-size: 28px;
             font-weight: bold;
+            cursor: pointer;
         }
 
-        .close:hover,
-        .close:focus {
+        .close-modal:hover,
+        .close-modal:focus {
             color: #fff;
             text-decoration: none;
-            cursor: pointer;
         }
 
         .thank-you-card {
@@ -442,6 +618,11 @@
             height: 200%;
             background: radial-gradient(circle, rgba(196, 30, 58, 0.1) 0%, rgba(196, 30, 58, 0) 70%);
             animation: shine 15s linear infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .thank-you-card h2 {
@@ -474,7 +655,6 @@
             transform: translateY(-2px);
         }
 
-
         .snowfall {
             position: fixed;
             top: 0;
@@ -496,30 +676,6 @@
         @keyframes snowfall {
             0% { transform: translateY(-5vh) rotate(0deg); }
             100% { transform: translateY(105vh) rotate(360deg); }
-        }
-
-        @media (max-width: 768px) {
-            .number-grid {
-                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-            }
-
-            h1 {
-                font-size: 2.5rem;
-            }
-
-            .prize-info h2 {
-                font-size: 2rem;
-            }
-
-            .form-container {
-                padding: 20px;
-            }
-
-            button {
-                width: 100%;
-                margin-right: 0;
-                margin-bottom: 10px;
-            }
         }
 
         .christmas-lights {
@@ -619,28 +775,288 @@
             display: block;
         }
 
-        /* Remove the multiple selection button styles */
-        .number-cell.selected {
-            background-color: var(--selected-color);
-            color: white;
-            border-color: var(--selected-color);
+        .prize-boxes {
+            position: relative;
+            width: 300px;
+            height: 400px;
+            margin: 40px auto;
+            perspective: 1000px;
         }
-        input[type="tel"] {
+
+        .prize-box {
+            position: absolute;
+            width: 250px;
+            height: 350px;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .prize-box:nth-child(1) {
+            top: 0;
+            left: 0;
+            z-index: 3;
+            transform: rotate(-5deg);
+        }
+
+        .prize-box:nth-child(2) {
+            top: 20px;
+            left: 20px;
+            z-index: 2;
+            transform: rotate(5deg);
+        }
+
+        .prize-box:nth-child(3) {
+            top: 40px;
+            left: 40px;
+            z-index: 1;
+            transform: rotate(-3deg);
+        }
+
+        .prize-box img {
             width: 100%;
-            padding: 12px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+            transition: all 0.6s ease;
+            filter: brightness(1.1) contrast(1.1);
+        }
+
+        .prize-box:hover {
+            transform: translateY(-10px) rotate(0deg);
+            z-index: 4;
+        }
+
+        @media (max-width: 768px) {
+            .prize-boxes {
+                width: 250px;
+                height: 350px;
+            }
+
+            .prize-box {
+                width: 200px;
+                height: 280px;
+            }
+
+            .prize-box:nth-child(2) {
+                top: 15px;
+                left: 15px;
+            }
+
+            .prize-box:nth-child(3) {
+                top: 30px;
+                left: 30px;
+            }
+        }
+
+        .content-reveal-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .content-reveal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .smile-icon {
+            font-size: 1.4rem;
+            transition: transform 0.3s ease;
+        }
+
+        .content-reveal-btn:hover .smile-icon {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .hidden-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease;
+            opacity: 0;
+        }
+
+        .hidden-content.revealed {
+            max-height: 2000px;
+            opacity: 1;
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .revealed > * {
+            animation: fadeSlideIn 0.6s ease forwards;
+        }
+
+        @media (max-width: 768px) {
+            .prize-boxes {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .prize-box {
+                width: 100%;
+                max-width: 300px;
+                height: auto;
+                aspect-ratio: 3/4;
+            }
+
+            .number-grid {
+                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .prize-info h2 {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 20px;
+            }
+
+            button {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+        .price-promotion {
+            background-color: rgba(255, 215, 0, 0.2);
+            border: 2px solid var(--highlight-color);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--highlight-color);
+            transition: all 0.3s ease;
+        }
+
+        .price-promotion strong {
+            font-size: 1.4rem;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .price-info {
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 0.9rem;
             color: var(--text-color);
         }
 
-        input[type="tel"]:focus {
-            outline: none;
-            border-color: var(--highlight-color);
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+        @media (max-width: 768px) {
+            .price-promotion {
+                font-size: 1rem;
+            }
+
+            .price-promotion strong {
+                font-size: 1.2rem;
+            }
         }
+
+        .choose-another-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 10px;
+            display: block;
+            width: 100%;
+        }
+
+        .choose-another-btn:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .choose-another-btn:active {
+            transform: translateY(0);
+        }
+
+        .additional-number-prompt {
+            background-color: rgba(255, 215, 0, 0.2);
+            border: 2px solid var(--highlight-color);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--highlight-color);
+            transition: all 0.3s ease;
+        }
+
+        .additional-number-prompt button {
+            margin-top: 10px;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .additional-number-prompt button:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .additional-number-prompt {
+                font-size: 0.9rem;
+            }
+        }
+        .footer {
+    background-color: rgba(12, 28, 44, 0.8);
+    color: var(--text-color);
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    border-radius: 0 0 20px 20px;
+}
+
+.footer a {
+    color: var(--highlight-color);
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
     </style>
 </head>
 <body>
@@ -666,29 +1082,103 @@
         Advertencia: Es posible que su navegador esté bloqueando el acceso al almacenamiento local. Esto puede afectar algunas funcionalidades de la aplicación.
     </div>
     <div id="app" class="container">
-        <h1>Rifa Navideña</h1>
+        <h1>Sorteo Navideño</h1>
         <div class="prize-info">
             <h2>Premio Espectacular Navideño</h2>
-            <p>Caja navideña</p>
-            <p>Lotería nacional nocturna 23/12</p>
+            <div class="prize-boxes">
+                <div class="prize-box">
+                    <img src="WhatsApp Image 2024-11-28 at 9.18.32 PM.jpeg" alt="Caja Navideña 1" 
+                         onerror="this.onerror=null; this.src='https://via.placeholder.com/300x400?text=Caja+Navideña+1';">
+                </div>
+                <div class="prize-box">
+                    <img src="WhatsApp Image 2024-11-28 at 9.18.32 PM.jpeg" alt="Caja Navideña 2"
+                         onerror="this.onerror=null; this.src='https://via.placeholder.com/300x400?text=Caja+Navideña+2';">
+                </div>
+            </div>
+            <div id="contentRevealContainer" class="text-center">
+                <button id="contentRevealBtn" class="content-reveal-btn">
+                    Ver Premios <span class="smile-icon">😊</span>
+                </button>
+            </div>
+            <div id="hiddenContent" class="hidden-content">
+                <h3>Contenido de las Cajas Navideñas:</h3>
+                <ul>
+                    <li>
+                        Primer Premio: Caja Navideña
+                        <ul>
+                            <li>Pan Dulce</li>
+                            <li>Sidra</li>
+                            <li>Turrón</li>
+                            <li>Budín</li>
+                            <li>Mantecol</li>
+                            <li>Garrapiñada</li>
+                        </ul>
+                    </li>
+                    <li>
+                        Segundo Premio: Caja Navideña
+                        <ul>
+                            <li>Pan Dulce</li>
+                            <li>Sidra</li>
+                            <li>Turrón</li>
+                            <li>Budín</li>
+                            <li>Mantecol</li>
+                            <li>Garrapiñada</li>
+                        </ul>
+                    </li>
+                    <li>
+                        Tercer Premio: Combo Festivo
+                        <ul>
+                            <li>Pan Dulce</li>
+                            <li>Sidra</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
+
+        <!-- Updated countdown timer with seconds -->
+        <div class="countdown-container">
+            <h2 class="countdown-title">Tiempo restante para el sorteo</h2>
+            <div class="countdown">
+                <div class="countdown-item">
+                    <div class="countdown-number" id="countdown-days">00</div>
+                    <div class="countdown-label">Días</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="countdown-hours">00</div>
+                    <div class="countdown-label">Horas</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="countdown-minutes">00</div>
+                    <div class="countdown-label">Minutos</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="countdown-seconds">00</div>
+                    <div class="countdown-label">Segundos</div>
+                </div>
+            </div>
+            <p>Número equivalente a las últimas dos cifras de las primeras tres posiciones del sorteo de la Lotería Nacional Nocturna del día 20/12.</p>
+        </div>
+
+        <!-- Improved draw date display 
+        <div class="draw-info">
+            <p>Número equivalente a las últimas dos cifras de las primeras tres posiciones del sorteo de la Lotería Nacional Nocturna del día 20/12.</p>
+        </div>-->
         <div class="live-counter">
             Números disponibles: <span class="counter-number" :class="{ pulse: counterPulse }">{{ availableNumbers.length }}</span>
         </div>
         <div class="progress-bar">
             <div class="progress-bar-fill" :style="{ width: progressPercentage + '%' }"></div>
         </div>
-        <div class="selected-numbers" v-if="selectedNumbers.length > 0">
-            <h3>Números seleccionados:</h3>
-            <div>
-                <span v-for="num in selectedNumbers" :key="num" class="selected-number-tag">
-                    {{ formatNumber(num) }}
-                </span>
-            </div>
-            <p>Precio total: ${{ totalPrice }}</p>
-        </div>
         <div class="form-container">
             <h2>Reserva tus números navideños</h2>
+            <!--div class="price-info">
+                <p>Precios:</p>
+                <ul>
+                    <li>1 número: $1500</li>
+                    <li>2 números o más: $1000 cada uno</li>
+                </ul>
+            </div-->
             <form @submit.prevent="initPayment">
                 <div class="form-group">
                     <label for="nombre">Nombre:</label>
@@ -702,10 +1192,32 @@
                     <label for="telefono">Número de Celular:</label>
                     <input type="tel" id="telefono" v-model="telefono" required>
                 </div>
-                <button type="submit" :disabled="selectedNumbers.length === 0">Pagar y Reservar</button>
+                <p>Precio total: ${{ totalPrice }}</p>
+                <button type="submit" :disabled="selectedNumbers.length === 0">{{ buttonText }}</button>
                 <button type="button" @click="luckyPick">Número de la Suerte Navideña</button>
                 <button type="button" @click="clearSelection">Limpiar Selección</button>
             </form>
+            <div v-if="showAdditionalPrompt" class="additional-number-prompt">
+                <p>¿Te gustaría elegir otro número para aumentar tus chances de ganar por solo $1000 más?</p>
+                <button @click="scrollToNumbers">¡Sí, quiero otro número!</button>
+            </div>
+        </div>
+        <div class="selected-numbers" v-if="selectedNumbers.length > 0">
+            <h3>Números seleccionados:</h3>
+            <div>
+                <span v-for="num in selectedNumbers" :key="num" class="selected-number-tag">
+                    {{ formatNumber(num) }}
+                </span>
+            </div>
+        </div>
+        <div class="price-promotion" v-if="showPricePromotion">
+            <span v-if="selectedNumbers.length === 1">
+                ¡Gran oferta! Elige un número más y paga solo $2000 por los dos.
+            </span>
+            <span v-else>
+                ¡Oferta especial! Elige dos o más números y paga solo $1000 cada uno.
+            </span>
+            <strong>{{ pricePromotionText }}</strong>
         </div>
         <div class="number-grid">
             <div 
@@ -723,6 +1235,17 @@
                         isSelected(n) ? 'Seleccionado' : 'Disponible'
                     }}
                 </div>
+            </div>
+        </div>
+        <div id="firstChoiceModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>¡Gran Oferta!</h2>
+                <p>Buena elección el número <span id="selectedNumber"></span>.</p>
+                 Elige un número más y paga solo $2000 por los dos.
+                 <br>
+                 <strong>1 por $1500 - 2 por $2000</strong>
+                <button id="chooseAnotherBtn" class="choose-another-btn">Elegir otro número</button>
             </div>
         </div>
         <div id="thankYouModal" class="modal" ref="modal">
@@ -749,6 +1272,10 @@
         <div class="santa-speech">{{ santaSpeech }}</div>
     </div>
 
+    <footer class="footer">
+        <p>Para cualquier duda o consulta, comuníquese al número: <a href="tel:3541-292548">3541-292548</a></p>
+    </footer>
+
     <script>
         const { createApp, ref, computed, onMounted, onUnmounted } = Vue
 
@@ -772,54 +1299,199 @@
                 const luckyNumber = ref(null)
                 const modal = ref(null)
 
-                function downloadParticipation() {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF({
-                        orientation: 'landscape',
-                        unit: 'mm',
-                        format: [100, 150]
+                const buttonText = ref('Pagar y Reservar')
+
+                const showPricePromotion = ref(false)
+                
+                const showAdditionalPrompt = ref(false)
+                const numberGrid = ref(null)
+
+                function updateCountdown() {
+                    const drawDate = new Date('2024-12-20T00:00:00').getTime();
+                    const now = new Date().getTime();
+                    const timeLeft = drawDate - now;
+
+                    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                    const daysElement = document.getElementById('countdown-days');
+                    const hoursElement = document.getElementById('countdown-hours');
+                    const minutesElement = document.getElementById('countdown-minutes');
+                    const secondsElement = document.getElementById('countdown-seconds');
+
+                    if (daysElement) daysElement.textContent = days.toString().padStart(2, '0');
+                    if (hoursElement) hoursElement.textContent = hours.toString().padStart(2, '0');
+                    if (minutesElement) minutesElement.textContent = minutes.toString().padStart(2, '0');
+                    if (secondsElement) secondsElement.textContent = seconds.toString().padStart(2, '0');
+
+                    if (timeLeft < 0) {
+                        clearInterval(countdownTimer);
+                        const countdownContainer = document.querySelector('.countdown-container');
+                        if (countdownContainer) {
+                            countdownContainer.innerHTML = '<h2 class="countdown-title">¡El sorteo ha finalizado!</h2>';
+                        }
+                    }
+                }
+
+
+                function initializeContentReveal() {
+            const contentRevealBtn = document.getElementById('contentRevealBtn');
+            const hiddenContent = document.getElementById('hiddenContent');
+            
+            if (contentRevealBtn && hiddenContent) {
+                contentRevealBtn.addEventListener('click', function() {
+                    const smile = this.querySelector('.smile-icon');
+                    const isRevealed = hiddenContent.classList.contains('revealed');
+                    
+                    if (isRevealed) {
+                        hiddenContent.classList.remove('revealed');
+                        smile.textContent = '😊';
+                        this.textContent = 'Ver Premios ';
+                        this.appendChild(smile);
+                    } else {
+                        hiddenContent.classList.add('revealed');
+                        smile.textContent = '😄';
+                        this.textContent = 'Ocultar Premios ';
+                        this.appendChild(smile);
+                        
+                        // Animación de los elementos del contenido
+                        const items = hiddenContent.querySelectorAll('li');
+                        items.forEach((item, index) => {
+                            item.style.animation = `fadeSlideIn 0.5s ease forwards ${index * 0.1}s`;
+                        });
+                    }
+                });
+            }
+        }
+
+                let countdownTimer;
+
+
+                function createConfetti(element) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    
+                    // Random position around the price
+                    const rect = element.getBoundingClientRect();
+                    confetti.style.left = `${rect.left + Math.random() * rect.width}px`;
+                    confetti.style.top = `${rect.top + Math.random() * rect.height}px`;
+                    
+                    // Random color
+                    confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    
+                    document.body.appendChild(confetti);
+                    
+                    // Animate
+                    confetti.animate([
+                        { transform: 'translate(0, 0) rotate(0deg)', opacity: 1 },
+                        { transform: `translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 + 50}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                    ], {
+                        duration: 1000,
+                        easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                    }).onfinish = () => confetti.remove();
+                }
+
+                // Animate prices on scroll
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.animation = 'priceReveal 0.5s ease forwards';
+                            // Create confetti
+                            for (let i = 0; i < 20; i++) {
+                                setTimeout(() => createConfetti(entry.target), i * 50);
+                            }
+                            observer.unobserve(entry.target);
+                        }
                     });
-                    
-                    doc.setFillColor(240, 249, 255);
-                    doc.rect(0, 0, 150, 100, 'F');
-                    
-                    doc.setDrawColor(196, 30, 58);
-                    doc.setLineWidth(2);
-                    doc.line(5, 5, 145, 5);
-                    doc.line(5, 95, 145, 95);
-                    
-                    doc.setTextColor(30, 41, 59);
-                    doc.setFont('helvetica', 'bold');
-                    
-                    doc.setFontSize(16);
-                    doc.text('Comprobante de Participación Navideña', 75, 20, null, null, 'center');
-                    
-                    doc.setFontSize(12);
-                    doc.setFont('helvetica', 'normal');
-                    doc.text(`Nombre: ${nombre.value}`, 10, 35);
-                    doc.text(`Apellido: ${apellido.value}`, 10, 45);
-                    doc.text(`Teléfono: ${telefono.value}`, 10, 55);
-                    doc.text(`Números reservados: ${lastReservedNumbers.value.map(formatNumber).join(', ')}`, 10, 65);
-                    doc.text(`Fecha: ${new Date().toLocaleString()}`, 10, 75);
-                    
-                    doc.setFontSize(10);
-                    doc.setTextColor(196, 30, 58);
-                    doc.text('¡Gracias por participar en nuestra Gran Rifa Navideña!', 75, 90, null, null, 'center');
-                    
-                    doc.save(`comprobante_navideño_${nombre.value}_${apellido.value}.pdf`);
+                }, { threshold: 0.5 });
+
+                function scrollToNumbers() {
+                    if (numberGrid.value) {
+                        numberGrid.value.scrollIntoView({ behavior: 'smooth' })
+                    }
+                    showAdditionalPrompt.value = false
                 }
 
-                const mp = new MercadoPago('APP_USR-a222a3c7-3f87-46c5-afe1-c172aa35323d');
-
-                function formatNumber(num) {
-                    return num.toString().padStart(2, '0');
+                function toggleNumber(n) {
+                    if (!isReserved(n)) {
+                        const index = selectedNumbers.value.indexOf(n)
+                        if (index === -1) {
+                            selectedNumbers.value.push(n)
+                            gsap.from(`#app .number-cell:nth-child(${n})`, {
+                                scale: 1.2,
+                                rotation: 360,
+                                duration: 0.5
+                            })
+                            showPricePromotion.value = true
+                            if (selectedNumbers.value.length === 1) {
+                                showFirstChoiceModal(n)
+                            } else if (selectedNumbers.value.length === 2) {
+                                showAdditionalPrompt.value = true
+                            }
+                        } else {
+                            selectedNumbers.value.splice(index, 1)
+                            showPricePromotion.value = selectedNumbers.value.length > 0
+                            showAdditionalPrompt.value = false
+                        }
+                    }
                 }
+
+                function showFirstChoiceModal(number) {
+                    const modal = document.getElementById('firstChoiceModal')
+                    const span = modal.querySelector('.close-modal')
+                    const chooseAnotherBtn = document.getElementById('chooseAnotherBtn')
+                    const selectedNumberSpan = document.getElementById('selectedNumber')
+                    const numberCell = document.querySelector(`.number-cell:nth-child(${number})`)
+                    const rect = numberCell.getBoundingClientRect()
+
+                    selectedNumberSpan.textContent = formatNumber(number)
+                    
+                    // Position the modal near the selected number
+                    const modalContent = modal.querySelector('.modal-content')
+                    modalContent.style.top = `${rect.bottom + window.scrollY + 10}px`
+                    
+                    modal.style.display = 'block'
+
+                    span.onclick = () => {
+                        modal.style.display = 'none'
+                    }
+
+                    chooseAnotherBtn.onclick = () => {
+                        modal.style.display = 'none'
+                        scrollToNumbers()
+                    }
+
+                    window.onclick = (event) => {
+                        if (event.target == modal) {
+                            modal.style.display = 'none'
+                        }
+                    }
+                }
+
+                function clearSelection() {
+                    selectedNumbers.value = []
+                    showPricePromotion.value = false
+                    showAdditionalPrompt.value = false
+                }
+
+                const pricePromotionText = computed(() => {
+                    if (selectedNumbers.value.length === 1) {
+                        return '1 por $1500 - 2 por $2000'
+                    } else if (selectedNumbers.value.length > 1) {
+                        return `${selectedNumbers.value.length} por $${selectedNumbers.value.length * 1000}`
+                    }
+                    return ''
+                })
 
                 async function initPayment() {
                     if (selectedNumbers.value.length === 0) {
                         alert('Por favor, seleccione al menos un número.')
                         return
                     }
+
+                    buttonText.value = 'Procesando solicitud...'
 
                     localStorage.setItem('pendingReservation', JSON.stringify({
                         nombre: nombre.value,
@@ -860,7 +1532,48 @@
                     } catch (error) {
                         console.error('Error al iniciar el pago:', error);
                         alert('Hubo un error al procesar el pago. Por favor, intente nuevamente.');
+                        buttonText.value = 'Pagar y Reservar'
                     }
+                }
+
+                function downloadParticipation() {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF({
+                        orientation: 'landscape',
+                        unit: 'mm',
+                        format: [100, 150]
+                    });
+                    
+                    doc.setFillColor(240, 249, 255);
+                    doc.rect(0, 0, 150, 100, 'F');
+                    
+                    doc.setDrawColor(196, 30, 58);
+                    doc.setLineWidth(2);
+                    doc.line(5, 5, 145, 5);
+                    doc.line(5, 95, 145, 95);
+                    
+                    doc.setTextColor(30, 41, 59);
+                    doc.setFont('helvetica', 'bold');
+                    
+                    doc.setFontSize(16);
+                    doc.text('Comprobante de Participación Navideña', 75, 20, null, null, 'center');
+                    
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`Números reservados: ${lastReservedNumbers.value.map(formatNumber).join(', ')}`, 10, 65);
+                    doc.text(`Fecha: ${new Date().toLocaleString()}`, 10, 75);
+                    
+                    doc.setFontSize(10);
+                    doc.setTextColor(196, 30, 58);
+                    doc.text('¡Gracias por participar en nuestra Gran Rifa Navideña!', 75, 90, null, null, 'center');
+                    
+                    doc.save(`comprobante_navideño_${nombre.value}_${apellido.value}.pdf`);
+                }
+
+                const mp = new MercadoPago('APP_USR-a222a3c7-3f87-46c5-afe1-c172aa35323d');
+
+                function formatNumber(num) {
+                    return num.toString().padStart(2, '0');
                 }
 
                 async function processPaymentResult() {
@@ -890,6 +1603,7 @@
                             const newReservation = { 
                                 nombre: nombre.value, 
                                 apellido: apellido.value, 
+                                telefono: telefono.value,  // Changed from 'numero' to 'telefono'
                                 numero: num 
                             }
                             reservations.value.push(newReservation)
@@ -927,22 +1641,6 @@
                     } catch (error) {
                         console.error('Error fetching reservations:', error)
                         alert('Hubo un error al cargar las reservaciones. Por favor, recargue la página.')
-                    }
-                }
-
-                function toggleNumber(n) {
-                    if (!isReserved(n)) {
-                        const index = selectedNumbers.value.indexOf(n)
-                        if (index === -1) {
-                            selectedNumbers.value.push(n)
-                            gsap.from(`#app .number-cell:nth-child(${n})`, {
-                                scale: 1.2,
-                                rotation: 360,
-                                duration: 0.5
-                            })
-                        } else {
-                            selectedNumbers.value.splice(index, 1)
-                        }
                     }
                 }
 
@@ -999,10 +1697,6 @@
                     } else {
                         alert('No hay números disponibles.')
                     }
-                }
-
-                function clearSelection() {
-                    selectedNumbers.value = []
                 }
 
                 function triggerConfetti() {
@@ -1094,7 +1788,6 @@
                     }
                 }
 
-
                 onMounted(async () => {
                     gsap.from("#app h1", { opacity: 0, y: -50, duration: 1 })
                     gsap.from("#app .prize-info", { opacity: 0, y: 50, duration: 1, delay: 0.5 })
@@ -1110,9 +1803,25 @@
                         }
                     }
                     createSnowflakes()
+                    initializeContentReveal()
 
                     await fetchReservations()
+                    
+                    updateCountdown(); // Initial call to avoid delay
+                    countdownTimer = setInterval(updateCountdown, 1000);
 
+                    updateCountdown(); // Initial call to avoid delay
+                    countdownTimer = setInterval(updateCountdown, 1000);
+
+                    // Animate countdown on mount
+                    gsap.from(".countdown-container", { opacity: 0, y: 50, duration: 1, delay: 0.5 });
+                    gsap.from(".countdown-item", { 
+                        opacity: 0, 
+                        scale: 0.5, 
+                        duration: 0.5, 
+                        stagger: 0.2,
+                        delay: 1
+                    });
                     const urlParams = new URLSearchParams(window.location.search);
                     const status = urlParams.get('status');
                     if (status === 'approved') {
@@ -1120,15 +1829,32 @@
                     } else if (status === 'failure' || status === 'pending') {
                         alert('El pago no se ha completado. Por favor, intente nuevamente.');
                     }
+
+                    document.querySelectorAll('.price-animation').forEach(price => {
+                        observer.observe(price);
+                    });
                 })
+
+                onUnmounted(() => {
+                    // Clear the interval when the component is unmounted
+                    if (countdownTimer) {
+                        clearInterval(countdownTimer);
+                    }
+                });
 
 
                 return {
                     initPayment,
+                    buttonText,
+                    showPricePromotion,
+                    pricePromotionText,
+                    showAdditionalPrompt,
+                    numberGrid,
+                    scrollToNumbers,
+                    toggleNumber,
                     totalPrice,
                     reservations,
                     selectedNumbers,
-                    toggleNumber,
                     nombre,
                     apellido,
                     telefono,
