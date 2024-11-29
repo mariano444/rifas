@@ -1485,6 +1485,8 @@
                     return ''
                 })
 
+                const mp = new MercadoPago('APP_USR-a222a3c7-3f87-46c5-afe1-c172aa35323d');
+
                 async function initPayment() {
                     if (selectedNumbers.value.length === 0) {
                         alert('Por favor, seleccione al menos un número.')
@@ -1505,11 +1507,11 @@
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'Authorization': 'Bearer APP_USR-3549263053798148-110618-852bdcdbea13c4a27d5d95d8e7f98f5b-2079511789'
+                                'Authorization': 'Bearer APP_USR-8142007441986200-111615-e50b20f8c3dc747c1b6b6bfa7924cc3e-1670125470'
                             },
                             body: JSON.stringify({
                                 items: [{
-                                    title: 'Números de Rifa',
+                                    title: 'Números de Sorteo',
                                     quantity: selectedNumbers.value.length,
                                     currency_id: 'ARS',
                                     unit_price: selectedNumbers.value.length === 1 ? 1500 : 1000
@@ -1569,8 +1571,6 @@
                     
                     doc.save(`comprobante_navideño_${nombre.value}_${apellido.value}.pdf`);
                 }
-
-                const mp = new MercadoPago('APP_USR-a222a3c7-3f87-46c5-afe1-c172aa35323d');
 
                 function formatNumber(num) {
                     return num.toString().padStart(2, '0');
