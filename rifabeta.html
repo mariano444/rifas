@@ -1074,7 +1074,19 @@
 .footer a:hover {
     text-decoration: underline;
 }
+.payment-notification {
+        margin-top: 15px;
+        padding: 10px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: var(--highlight-color);
+        text-align: center;
+    }
 
+    .payment-notification p {
+        margin: 0;
+    }
     </style>
 </head>
 <body>
@@ -1214,6 +1226,9 @@
                 <button type="submit" :disabled="selectedNumbers.length === 0">{{ buttonText }}</button>
                 <button type="button" @click="luckyPick">Número de la Suerte Navideña</button>
                 <button type="button" @click="clearSelection">Limpiar Selección</button>
+                <div class="payment-notification">
+                    <p>Importante: Después de abonar, deberás volver a este sitio web para descargar tu comprobante.</p>
+                </div>
             </form>
             <div v-if="showAdditionalPrompt" class="additional-number-prompt">
                 <p>¿Te gustaría elegir otro número para aumentar tus chances de ganar por solo $1000 más?</p>
@@ -1324,83 +1339,6 @@
                 const showAdditionalPrompt = ref(false)
                 const numberGrid = ref(null)
 
-
-                async function processPaymentResult() {
-                    console.log('Procesando resultado del pago...');
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const status = urlParams.get('status');
-                    const pendingReservationData = localStorage.getItem('pendingReservation');
-
-                    console.log('Estado del pago:', status);
-                    console.log('Datos de reserva pendiente:', pendingReservationData);
-
-                    if (status === 'approved' && pendingReservationData) {
-                        console.log('Pago aprobado. Procesando reserva...');
-                        const reservationData = JSON.parse(pendingReservationData);
-                        nombre.value = reservationData.nombre;
-                        apellido.value = reservationData.apellido;
-                        telefono.value = reservationData.telefono;
-                        selectedNumbers.value = reservationData.selectedNumbers;
-
-                        await reserveNumbers();
-                        localStorage.removeItem('pendingReservation');
-                        
-                        console.log('Reserva procesada y guardada.');
-                        
-                        // Clean the URL after successful payment
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    } else if (status === 'failure' || status === 'pending') {
-                        console.log('Pago no completado o pendiente.');
-                        alert('El pago no se ha completado. Por favor, intente nuevamente.');
-                        localStorage.removeItem('pendingReservation');
-                        
-                        // Clean the URL for failed or pending payments as well
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    }
-                }
-
-                async function reserveNumbers() {
-                    console.log('Iniciando reserva de números...');
-                    lastReservedNumbers.value = [...selectedNumbers.value];
-                    for (const num of selectedNumbers.value) {
-                        if (!isReserved(num)) {
-                            const newReservation = { 
-                                nombre: nombre.value, 
-                                apellido: apellido.value, 
-                                telefono: telefono.value,
-                                numero: num 
-                            };
-                            reservations.value.push(newReservation);
-                            
-                            try {
-                                console.log('Guardando reserva en Supabase:', newReservation);
-                                const { data, error } = await supabase
-                                    .from('reservations')
-                                    .insert([newReservation]);
-
-                                if (error) throw error;
-                                console.log('Reserva guardada exitosamente:', data);
-                            } catch (error) {
-                                console.error('Error al guardar la reserva:', error);
-                                alert('Hubo un error al guardar la reserva. Por favor, contacte al administrador.');
-                            }
-                        }
-                    }
-                    triggerConfetti();
-                    pulseCounter();
-                    showFireworks();
-                    showThankYouModal();
-                    nombre.value = '';
-                    apellido.value = '';
-                    telefono.value = '';
-                    selectedNumbers.value = [];
-                    console.log('Proceso de reserva completado.');
-                }
-
-
-
-                //////
-
                 function getReservationName(n) {
                     const reservation = reservations.value.find(r => r.numero === n)
                     return reservation ? `${reservation.nombre} ${reservation.apellido}` : ''
@@ -1422,6 +1360,32 @@
                     const truncatedLastName = lastName.slice(0, 10 - initials.length - 1);
                     
                     return `${initials}. ${truncatedLastName}`;
+                }
+
+                async function processPaymentResult() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const status = urlParams.get('status');
+                    const pendingReservationData = localStorage.getItem('pendingReservation');
+
+                    if (status === 'approved' && pendingReservationData) {
+                        const reservationData = JSON.parse(pendingReservationData);
+                        nombre.value = reservationData.nombre;
+                        apellido.value = reservationData.apellido;
+                        telefono.value = reservationData.telefono;
+                        selectedNumbers.value = reservationData.selectedNumbers;
+
+                        await reserveNumbers();
+                        localStorage.removeItem('pendingReservation');
+                        
+                        // Clean the URL after successful payment
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    } else if (status === 'failure' || status === 'pending') {
+                        alert('El pago no se ha completado. Por favor, intente nuevamente.');
+                        localStorage.removeItem('pendingReservation');
+                        
+                        // Clean the URL for failed or pending payments as well
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
                 }
 
 
@@ -1696,6 +1660,40 @@
                 }
 
 
+                async function reserveNumbers() {
+                    lastReservedNumbers.value = [...selectedNumbers.value]
+                    for (const num of selectedNumbers.value) {
+                        if (!isReserved(num)) {
+                            const newReservation = { 
+                                nombre: nombre.value, 
+                                apellido: apellido.value, 
+                                telefono: telefono.value,  // Changed from 'numero' to 'telefono'
+                                numero: num 
+                            }
+                            reservations.value.push(newReservation)
+                            
+                            try {
+                                const { data, error } = await supabase
+                                    .from('reservations')
+                                    .insert([newReservation])
+
+                                if (error) throw error;
+                            } catch (error) {
+                                console.error('Error storing reservation:', error)
+                                alert('Hubo un error al guardar la reserva. Por favor, contacte al administrador.')
+                            }
+                        }
+                    }
+                    triggerConfetti()
+                    pulseCounter()
+                    showFireworks()
+                    showThankYouModal()
+                    nombre.value = ''
+                    apellido.value = ''
+                    telefono.value = ''
+                    selectedNumbers.value = []
+                }
+
                 async function fetchReservations() {
                     try {
                         const { data, error } = await supabase
@@ -1850,16 +1848,7 @@
                     }
                 }
 
-                onUnmounted(() => {
-                    // Clear the interval when the component is unmounted
-                    if (countdownTimer) {
-                        clearInterval(countdownTimer);
-                    }
-                });
-
-
                 onMounted(async () => {
-                    console.log('Componente montado. Iniciando configuración...');
                     gsap.from("#app h1", { opacity: 0, y: -50, duration: 1 })
                     gsap.from("#app .prize-info", { opacity: 0, y: 50, duration: 1, delay: 0.5 })
                     gsap.from("#app .form-container", { opacity: 0, scale: 0.8, duration: 1, delay: 1 })
@@ -1881,6 +1870,9 @@
                     updateCountdown(); // Initial call to avoid delay
                     countdownTimer = setInterval(updateCountdown, 1000);
 
+                    updateCountdown(); // Initial call to avoid delay
+                    countdownTimer = setInterval(updateCountdown, 1000);
+
                     // Animate countdown on mount
                     gsap.from(".countdown-container", { opacity: 0, y: 50, duration: 1, delay: 0.5 });
                     gsap.from(".countdown-item", { 
@@ -1890,24 +1882,26 @@
                         stagger: 0.2,
                         delay: 1
                     });
-
-                    console.log('Verificando estado del pago...');
                     const urlParams = new URLSearchParams(window.location.search);
                     const status = urlParams.get('status');
                     if (status === 'approved') {
-                        console.log('Pago aprobado. Procesando resultado...');
                         await processPaymentResult();
                     } else if (status === 'failure' || status === 'pending') {
-                        console.log('Pago fallido o pendiente.');
                         alert('El pago no se ha completado. Por favor, intente nuevamente.');
                     }
 
                     document.querySelectorAll('.price-animation').forEach(price => {
                         observer.observe(price);
                     });
-
-                    console.log('Configuración inicial completada.');
                 })
+
+                onUnmounted(() => {
+                    // Clear the interval when the component is unmounted
+                    if (countdownTimer) {
+                        clearInterval(countdownTimer);
+                    }
+                });
+
 
                 return {
                     initPayment,
