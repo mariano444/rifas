@@ -386,8 +386,26 @@
             position: relative;
             overflow: hidden;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: visible; /* Changed from hidden to visible */
         }
 
+        .reserved-name {
+            position: absolute;
+            bottom: 2px;
+            left: 2px;
+            right: 2px;
+            font-size: 14px; /* Reduced font size */
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            color: white;
+            padding: 1px;
+            border-radius: 2px;
+        }
         .number-cell:hover {
             transform: scale(1.05) rotate(3deg);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
@@ -405,7 +423,7 @@
             border-color: var(--selected-color);
         }
 
-        .reserved-name {
+       /* .reserved-name {
             font-size: 10px;
             text-align: center;
             overflow: hidden;
@@ -413,7 +431,7 @@
             white-space: nowrap;
             padding: 0 4px;
             margin-top: 4px;
-        }
+        }*/
 
         .live-counter {
             text-align: center;
@@ -1228,7 +1246,7 @@
             >
                 {{ formatNumber(n) }}
                 <div v-if="isReserved(n)" class="reserved-name">
-                    {{ getReservationName(n) }}
+                    {{ truncateName(getReservationName(n)) }}
                 </div>
                 <div class="tooltip">
                     {{ isReserved(n) ? 'Reservado por ' + getReservationName(n) :
@@ -1305,6 +1323,29 @@
                 
                 const showAdditionalPrompt = ref(false)
                 const numberGrid = ref(null)
+
+                function getReservationName(n) {
+                    const reservation = reservations.value.find(r => r.numero === n)
+                    return reservation ? `${reservation.nombre} ${reservation.apellido}` : ''
+                }
+
+                function truncateName(fullName) {
+                    if (!fullName) return '';
+                    const names = fullName.split(' ');
+                    if (names.length === 1) return names[0];
+                    
+                    const firstName = names[0];
+                    const lastName = names[names.length - 1];
+                    
+                    if (firstName.length + lastName.length <= 10) {
+                        return `${firstName} ${lastName}`;
+                    }
+                    
+                    const initials = names.slice(0, -1).map(name => name[0]).join('');
+                    const truncatedLastName = lastName.slice(0, 10 - initials.length - 1);
+                    
+                    return `${initials}. ${truncatedLastName}`;
+                }
 
                 async function processPaymentResult() {
                     const urlParams = new URLSearchParams(window.location.search);
@@ -1534,7 +1575,7 @@
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'Authorization': 'Bearer APP_USR-3549263053798148-110618-852bdcdbea13c4a27d5d95d8e7f98f5b-2079511789'
+                                'Authorization': 'Bearer APP_USR-8142007441986200-111615-e50b20f8c3dc747c1b6b6bfa7924cc3e-1670125470'
                             },
                             body: JSON.stringify({
                                 items: [{
@@ -1675,10 +1716,6 @@
                     return selectedNumbers.value.includes(n)
                 }
 
-                function getReservationName(n) {
-                    const reservation = reservations.value.find(r => r.numero === n)
-                    return reservation ? `${reservation.nombre} ${reservation.apellido}` : ''
-                }
 
                 function luckyPick() {
                     if (availableNumbers.value.length > 0) {
@@ -1855,6 +1892,7 @@
                     initPayment,
                     buttonText,
                     showPricePromotion,
+                    truncateName,
                     pricePromotionText,
                     showAdditionalPrompt,
                     numberGrid,
