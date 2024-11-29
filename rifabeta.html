@@ -1379,6 +1379,57 @@
                         buttonText.value = 'Pagar y Reservar'
                     }
                 }
+                async function reserveNumbers() {
+        lastReservedNumbers.value = [...selectedNumbers.value]
+        const reservationsToInsert = []
+
+        for (const num of selectedNumbers.value) {
+            if (!isReserved(num)) {
+                const newReservation = { 
+                    nombre: nombre.value, 
+                    apellido: apellido.value, 
+                    telefono: telefono.value,
+                    numero: num 
+                }
+                reservationsToInsert.push(newReservation)
+            }
+        }
+
+        if (reservationsToInsert.length > 0) {
+            try {
+                const { data, error } = await supabase
+                    .from('reservations')
+                    .insert(reservationsToInsert)
+                    .select()
+
+                if (error) {
+                    console.error('Error details:', error)
+                    throw error
+                }
+
+                // Update local reservations with the newly inserted data
+                reservations.value = [...reservations.value, ...data]
+
+                triggerConfetti()
+                pulseCounter()
+                showFireworks()
+                showThankYouModal()
+                nombre.value = ''
+                apellido.value = ''
+                telefono.value = ''
+                selectedNumbers.value = []
+            } catch (error) {
+                console.error('Error al guardar las reservas:', error)
+                if (error.code === '23505') {
+                    alert('Uno o más números ya han sido reservados. Por favor, seleccione otros números.')
+                } else {
+                    alert('Hubo un error al guardar las reservas. Por favor, contacte al administrador.')
+                }
+            }
+        } else {
+            console.log('No hay nuevos números para reservar')
+        }
+    }
 
 
                 function getReservationName(n) {
@@ -1774,51 +1825,6 @@
                         snowflake.style.animationDuration = `${Math.random() * 3 + 2}s`;
                         snowflake.style.animationDelay = `${Math.random() * 2}s`;
                         snowfall.appendChild(snowflake);
-                    }
-                }
-
-                async function reserveNumbers() {
-                    lastReservedNumbers.value = [...selectedNumbers.value]
-                    const reservationsToInsert = []
-
-                    for (const num of selectedNumbers.value) {
-                        if (!isReserved(num)) {
-                            const newReservation = { 
-                                nombre: nombre.value, 
-                                apellido: apellido.value, 
-                                telefono: telefono.value,
-                                numero: num 
-                            }
-                            reservationsToInsert.push(newReservation)
-                        }
-                    }
-
-                    if (reservationsToInsert.length > 0) {
-                        try {
-                            const { data, error } = await supabase
-                                .from('reservations')
-                                .insert(reservationsToInsert)
-                                .select()
-
-                            if (error) throw error;
-
-                            // Update local reservations with the newly inserted data
-                            reservations.value = [...reservations.value, ...data]
-
-                            triggerConfetti()
-                            pulseCounter()
-                            showFireworks()
-                            showThankYouModal()
-                            nombre.value = ''
-                            apellido.value = ''
-                            telefono.value = ''
-                            selectedNumbers.value = []
-                        } catch (error) {
-                            console.error('Error al guardar las reservas:', error)
-                            alert('Hubo un error al guardar las reservas. Por favor, contacte al administrador.')
-                        }
-                    } else {
-                        console.log('No hay nuevos números para reservar')
                     }
                 }
 
