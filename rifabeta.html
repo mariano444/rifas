@@ -1380,66 +1380,6 @@
                     }
                 }
 
-                async function processPaymentResult() {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const status = urlParams.get('status');
-                    const externalReference = urlParams.get('external_reference');
-
-                    if (status === 'approved' && externalReference) {
-                        const reservationData = JSON.parse(decodeURIComponent(externalReference));
-                        nombre.value = reservationData.nombre;
-                        apellido.value = reservationData.apellido;
-                        telefono.value = reservationData.telefono;
-                        selectedNumbers.value = reservationData.selectedNumbers;
-
-                        await reserveNumbers();
-                        
-                        // Limpiar la URL después de un pago y reserva exitosos
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    } else if (status === 'failure' || status === 'pending') {
-                        alert('El pago no se ha completado. Por favor, intente nuevamente.');
-                        
-                        // Limpiar la URL para pagos fallidos o pendientes
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    }
-                }
-
-                async function reserveNumbers() {
-                    lastReservedNumbers.value = [...selectedNumbers.value]
-                    for (const num of selectedNumbers.value) {
-                        if (!isReserved(num)) {
-                            const newReservation = { 
-                                nombre: nombre.value, 
-                                apellido: apellido.value, 
-                                telefono: telefono.value,
-                                numero: num 
-                            }
-                            reservations.value.push(newReservation)
-                            
-                            try {
-                                const { data, error } = await supabase
-                                    .from('reservations')
-                                    .insert([newReservation])
-
-                                if (error) throw error;
-                            } catch (error) {
-                                console.error('Error al guardar la reserva:', error)
-                                alert('Hubo un error al guardar la reserva. Por favor, contacte al administrador.')
-                            }
-                        }
-                    }
-                    triggerConfetti()
-                    pulseCounter()
-                    showFireworks()
-                    showThankYouModal()
-                    nombre.value = ''
-                    apellido.value = ''
-                    telefono.value = ''
-                    selectedNumbers.value = []
-                }
-/////
-
-
 
                 function getReservationName(n) {
                     const reservation = reservations.value.find(r => r.numero === n)
@@ -1837,6 +1777,80 @@
                     }
                 }
 
+                async function reserveNumbers() {
+                    lastReservedNumbers.value = [...selectedNumbers.value]
+                    const reservationsToInsert = []
+
+                    for (const num of selectedNumbers.value) {
+                        if (!isReserved(num)) {
+                            const newReservation = { 
+                                nombre: nombre.value, 
+                                apellido: apellido.value, 
+                                telefono: telefono.value,
+                                numero: num 
+                            }
+                            reservationsToInsert.push(newReservation)
+                        }
+                    }
+
+                    if (reservationsToInsert.length > 0) {
+                        try {
+                            const { data, error } = await supabase
+                                .from('reservations')
+                                .insert(reservationsToInsert)
+                                .select()
+
+                            if (error) throw error;
+
+                            // Update local reservations with the newly inserted data
+                            reservations.value = [...reservations.value, ...data]
+
+                            triggerConfetti()
+                            pulseCounter()
+                            showFireworks()
+                            showThankYouModal()
+                            nombre.value = ''
+                            apellido.value = ''
+                            telefono.value = ''
+                            selectedNumbers.value = []
+                        } catch (error) {
+                            console.error('Error al guardar las reservas:', error)
+                            alert('Hubo un error al guardar las reservas. Por favor, contacte al administrador.')
+                        }
+                    } else {
+                        console.log('No hay nuevos números para reservar')
+                    }
+                }
+
+                async function processPaymentResult() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const status = urlParams.get('status');
+                    const externalReference = urlParams.get('external_reference');
+
+                    if (status === 'approved' && externalReference) {
+                        try {
+                            const reservationData = JSON.parse(decodeURIComponent(externalReference));
+                            nombre.value = reservationData.nombre;
+                            apellido.value = reservationData.apellido;
+                            telefono.value = reservationData.telefono;
+                            selectedNumbers.value = reservationData.selectedNumbers;
+
+                            await reserveNumbers();
+                        } catch (error) {
+                            console.error('Error al procesar el resultado del pago:', error);
+                            alert('Hubo un error al procesar el pago. Por favor, contacte al administrador.');
+                        } finally {
+                            // Limpiar la URL después de procesar el pago
+                            window.history.replaceState({}, document.title, window.location.pathname);
+                        }
+                    } else if (status === 'failure' || status === 'pending') {
+                        alert('El pago no se ha completado. Por favor, intente nuevamente.');
+                        // Limpiar la URL para pagos fallidos o pendientes
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                }
+
+
                 onMounted(async () => {
                     gsap.from("#app h1", { opacity: 0, y: -50, duration: 1 })
                     gsap.from("#app .prize-info", { opacity: 0, y: 50, duration: 1, delay: 0.5 })
@@ -1871,12 +1885,13 @@
                         stagger: 0.2,
                         delay: 1
                     });
+                    await fetchReservations()
+                    
+                    // Process payment result if status is in URL
                     const urlParams = new URLSearchParams(window.location.search);
                     const status = urlParams.get('status');
-                    if (status === 'approved') {
+                    if (status) {
                         await processPaymentResult();
-                    } else if (status === 'failure' || status === 'pending') {
-                        alert('El pago no se ha completado. Por favor, intente nuevamente.');
                     }
 
                     document.querySelectorAll('.price-animation').forEach(price => {
