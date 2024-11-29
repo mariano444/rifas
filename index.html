@@ -1074,7 +1074,19 @@
 .footer a:hover {
     text-decoration: underline;
 }
+.payment-notification {
+        margin-top: 15px;
+        padding: 10px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: var(--highlight-color);
+        text-align: center;
+    }
 
+    .payment-notification p {
+        margin: 0;
+    }
     </style>
 </head>
 <body>
@@ -1214,6 +1226,9 @@
                 <button type="submit" :disabled="selectedNumbers.length === 0">{{ buttonText }}</button>
                 <button type="button" @click="luckyPick">Número de la Suerte Navideña</button>
                 <button type="button" @click="clearSelection">Limpiar Selección</button>
+                <div class="payment-notification">
+                    <p>Importante: Después de abonar, deberás volver a este sitio web para descargar tu comprobante.</p>
+                </div>
             </form>
             <div v-if="showAdditionalPrompt" class="additional-number-prompt">
                 <p>¿Te gustaría elegir otro número para aumentar tus chances de ganar por solo $1000 más?</p>
