@@ -1539,51 +1539,34 @@
                 function downloadParticipation() {
                     const { jsPDF } = window.jspdf;
                     const doc = new jsPDF({
-                        orientation: 'portrait',
+                        orientation: 'landscape',
                         unit: 'mm',
-                        format: 'a4'
+                        format: [100, 150]
                     });
                     
-                    // Set background color
                     doc.setFillColor(240, 249, 255);
-                    doc.rect(0, 0, 210, 297, 'F');
+                    doc.rect(0, 0, 150, 100, 'F');
                     
-                    // Add decorative elements
                     doc.setDrawColor(196, 30, 58);
                     doc.setLineWidth(2);
-                    doc.line(10, 10, 200, 10);
-                    doc.line(10, 287, 200, 287);
+                    doc.line(5, 5, 145, 5);
+                    doc.line(5, 95, 145, 95);
                     
-                    // Add header
                     doc.setTextColor(30, 41, 59);
                     doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(24);
-                    doc.text('Comprobante de Participación', 105, 30, null, null, 'center');
-                    doc.setFontSize(18);
-                    doc.text('Gran Rifa Navideña', 105, 40, null, null, 'center');
                     
-                    // Add participant information
+                    doc.setFontSize(16);
+                    doc.text('Comprobante de Participación Navideña', 75, 20, null, null, 'center');
+                    
                     doc.setFontSize(12);
                     doc.setFont('helvetica', 'normal');
-                    doc.text(`Nombre: ${nombre.value} ${apellido.value}`, 20, 60);
-                    doc.text(`Teléfono: ${telefono.value}`, 20, 70);
-                    doc.text(`Números reservados: ${lastReservedNumbers.value.map(formatNumber).join(', ')}`, 20, 80);
-                    doc.text(`Fecha de emisión: ${new Date().toLocaleString()}`, 20, 90);
+                    doc.text(`Números reservados: ${lastReservedNumbers.value.map(formatNumber).join(', ')}`, 10, 65);
+                    doc.text(`Fecha: ${new Date().toLocaleString()}`, 10, 75);
                     
-                    // Add raffle information
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('Información del Sorteo:', 20, 110);
-                    doc.setFont('helvetica', 'normal');
-                    doc.text('Fecha del sorteo: 20 de Diciembre de 2024', 20, 120);
-                    doc.text('Basado en: Lotería Nacional Nocturna', 20, 130);
-                    
-                    // Add footer
                     doc.setFontSize(10);
                     doc.setTextColor(196, 30, 58);
-                    doc.text('¡Gracias por participar en nuestra Gran Rifa Navideña!', 105, 280, null, null, 'center');
-                    doc.text('¡Mucha suerte!', 105, 285, null, null, 'center');
+                    doc.text('¡Gracias por participar en nuestra Gran Rifa Navideña!', 75, 90, null, null, 'center');
                     
-                    // Save the PDF
                     doc.save(`comprobante_navideño_${nombre.value}_${apellido.value}.pdf`);
                 }
 
