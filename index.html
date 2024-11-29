@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gran Rifa Navideña</title>
+    <title>Sorteo Navideño</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="https://unpkg.com/canvas-confetti@1.5.1/dist/confetti.browser.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
@@ -1039,6 +1039,23 @@
                 font-size: 0.9rem;
             }
         }
+        .footer {
+    background-color: rgba(12, 28, 44, 0.8);
+    color: var(--text-color);
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    border-radius: 0 0 20px 20px;
+}
+
+.footer a {
+    color: var(--highlight-color);
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
 
     </style>
 </head>
@@ -1065,7 +1082,7 @@
         Advertencia: Es posible que su navegador esté bloqueando el acceso al almacenamiento local. Esto puede afectar algunas funcionalidades de la aplicación.
     </div>
     <div id="app" class="container">
-        <h1>Rifa Navideña</h1>
+        <h1>Sorteo Navideño</h1>
         <div class="prize-info">
             <h2>Premio Espectacular Navideño</h2>
             <div class="prize-boxes">
@@ -1155,13 +1172,13 @@
         </div>
         <div class="form-container">
             <h2>Reserva tus números navideños</h2>
-            <div class="price-info">
+            <!--div class="price-info">
                 <p>Precios:</p>
                 <ul>
                     <li>1 número: $1500</li>
                     <li>2 números o más: $1000 cada uno</li>
                 </ul>
-            </div>
+            </div-->
             <form @submit.prevent="initPayment">
                 <div class="form-group">
                     <label for="nombre">Nombre:</label>
@@ -1254,6 +1271,10 @@
     <div class="santa-animation">
         <div class="santa-speech">{{ santaSpeech }}</div>
     </div>
+
+    <footer class="footer">
+        <p>Para cualquier duda o consulta, comuníquese al número: <a href="tel:3541-292548">3541-292548</a></p>
+    </footer>
 
     <script>
         const { createApp, ref, computed, onMounted, onUnmounted } = Vue
@@ -1518,34 +1539,51 @@
                 function downloadParticipation() {
                     const { jsPDF } = window.jspdf;
                     const doc = new jsPDF({
-                        orientation: 'landscape',
+                        orientation: 'portrait',
                         unit: 'mm',
-                        format: [100, 150]
+                        format: 'a4'
                     });
                     
+                    // Set background color
                     doc.setFillColor(240, 249, 255);
-                    doc.rect(0, 0, 150, 100, 'F');
+                    doc.rect(0, 0, 210, 297, 'F');
                     
+                    // Add decorative elements
                     doc.setDrawColor(196, 30, 58);
                     doc.setLineWidth(2);
-                    doc.line(5, 5, 145, 5);
-                    doc.line(5, 95, 145, 95);
+                    doc.line(10, 10, 200, 10);
+                    doc.line(10, 287, 200, 287);
                     
+                    // Add header
                     doc.setTextColor(30, 41, 59);
                     doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(24);
+                    doc.text('Comprobante de Participación', 105, 30, null, null, 'center');
+                    doc.setFontSize(18);
+                    doc.text('Gran Rifa Navideña', 105, 40, null, null, 'center');
                     
-                    doc.setFontSize(16);
-                    doc.text('Comprobante de Participación Navideña', 75, 20, null, null, 'center');
-                    
+                    // Add participant information
                     doc.setFontSize(12);
                     doc.setFont('helvetica', 'normal');
-                    doc.text(`Números reservados: ${lastReservedNumbers.value.map(formatNumber).join(', ')}`, 10, 65);
-                    doc.text(`Fecha: ${new Date().toLocaleString()}`, 10, 75);
+                    doc.text(`Nombre: ${nombre.value} ${apellido.value}`, 20, 60);
+                    doc.text(`Teléfono: ${telefono.value}`, 20, 70);
+                    doc.text(`Números reservados: ${lastReservedNumbers.value.map(formatNumber).join(', ')}`, 20, 80);
+                    doc.text(`Fecha de emisión: ${new Date().toLocaleString()}`, 20, 90);
                     
+                    // Add raffle information
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('Información del Sorteo:', 20, 110);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text('Fecha del sorteo: 20 de Diciembre de 2024', 20, 120);
+                    doc.text('Basado en: Lotería Nacional Nocturna', 20, 130);
+                    
+                    // Add footer
                     doc.setFontSize(10);
                     doc.setTextColor(196, 30, 58);
-                    doc.text('¡Gracias por participar en nuestra Gran Rifa Navideña!', 75, 90, null, null, 'center');
+                    doc.text('¡Gracias por participar en nuestra Gran Rifa Navideña!', 105, 280, null, null, 'center');
+                    doc.text('¡Mucha suerte!', 105, 285, null, null, 'center');
                     
+                    // Save the PDF
                     doc.save(`comprobante_navideño_${nombre.value}_${apellido.value}.pdf`);
                 }
 
@@ -1582,7 +1620,8 @@
                             const newReservation = { 
                                 nombre: nombre.value, 
                                 apellido: apellido.value, 
-                                numero: telefono.value
+                                telefono: telefono.value,  // Changed from 'numero' to 'telefono'
+                                numero: num 
                             }
                             reservations.value.push(newReservation)
                             
