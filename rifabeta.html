@@ -1306,6 +1306,33 @@
                 const showAdditionalPrompt = ref(false)
                 const numberGrid = ref(null)
 
+                async function processPaymentResult() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const status = urlParams.get('status');
+                    const pendingReservationData = localStorage.getItem('pendingReservation');
+
+                    if (status === 'approved' && pendingReservationData) {
+                        const reservationData = JSON.parse(pendingReservationData);
+                        nombre.value = reservationData.nombre;
+                        apellido.value = reservationData.apellido;
+                        telefono.value = reservationData.telefono;
+                        selectedNumbers.value = reservationData.selectedNumbers;
+
+                        await reserveNumbers();
+                        localStorage.removeItem('pendingReservation');
+                        
+                        // Clean the URL after successful payment
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    } else if (status === 'failure' || status === 'pending') {
+                        alert('El pago no se ha completado. Por favor, intente nuevamente.');
+                        localStorage.removeItem('pendingReservation');
+                        
+                        // Clean the URL for failed or pending payments as well
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                }
+
+
                 function updateCountdown() {
                     const drawDate = new Date('2024-12-20T00:00:00').getTime();
                     const now = new Date().getTime();
@@ -1485,6 +1512,8 @@
                     return ''
                 })
 
+                const mp = new MercadoPago('APP_USR-a222a3c7-3f87-46c5-afe1-c172aa35323d');
+
                 async function initPayment() {
                     if (selectedNumbers.value.length === 0) {
                         alert('Por favor, seleccione al menos un número.')
@@ -1509,7 +1538,7 @@
                             },
                             body: JSON.stringify({
                                 items: [{
-                                    title: 'Números de Rifa',
+                                    title: 'Números de Sorteo',
                                     quantity: selectedNumbers.value.length,
                                     currency_id: 'ARS',
                                     unit_price: selectedNumbers.value.length === 1 ? 1500 : 1000
@@ -1570,31 +1599,10 @@
                     doc.save(`comprobante_navideño_${nombre.value}_${apellido.value}.pdf`);
                 }
 
-                const mp = new MercadoPago('APP_USR-a222a3c7-3f87-46c5-afe1-c172aa35323d');
-
                 function formatNumber(num) {
                     return num.toString().padStart(2, '0');
                 }
 
-                async function processPaymentResult() {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const status = urlParams.get('status');
-                    const pendingReservationData = localStorage.getItem('pendingReservation');
-
-                    if (status === 'approved' && pendingReservationData) {
-                        const reservationData = JSON.parse(pendingReservationData);
-                        nombre.value = reservationData.nombre;
-                        apellido.value = reservationData.apellido;
-                        telefono.value = reservationData.telefono;
-                        selectedNumbers.value = reservationData.selectedNumbers;
-
-                        await reserveNumbers();
-                        localStorage.removeItem('pendingReservation');
-                    } else if (status === 'failure' || status === 'pending') {
-                        alert('El pago no se ha completado. Por favor, intente nuevamente.');
-                        localStorage.removeItem('pendingReservation');
-                    }
-                }
 
                 async function reserveNumbers() {
                     lastReservedNumbers.value = [...selectedNumbers.value]
