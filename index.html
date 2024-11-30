@@ -1261,7 +1261,7 @@
             >
                 {{ formatNumber(n) }}
                 <div v-if="isReserved(n)" class="reserved-name">
-                    {{ truncateName(getReservationName(n)) }}
+                    {{ getReservationName(n) }}
                 </div>
                 <div class="tooltip">
                     {{ isReserved(n) ? 'Reservado por ' + getReservationName(n) :
